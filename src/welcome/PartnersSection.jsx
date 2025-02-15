@@ -6,9 +6,9 @@ import ww from "../ass/ww.png";
 
 const PartnersSection = () => {
   const partners = [
-    { id: 1, name: "5G Solutions", image: g, color: "from-blue-100 to-blue-200" },
-    { id: 2, name: "Orb Tech", image: orb, color: "from-green-100 to-green-200" },
-    { id: 3, name: "World Wide", image: ww, color: "from-purple-100 to-purple-200" },
+    { id: 1, name: "5AM youth", image: g, color: "from-blue-100 to-blue-200" },
+    { id: 2, name: "Orbit innovation hub", image: orb, color: "from-green-100 to-green-200" },
+    { id: 3, name: "Wolkite universty ", image: ww, color: "from-purple-100 to-purple-200" },
   ];
 
   return (

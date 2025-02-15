@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { FaRocket, FaArrowRight, FaArrowAltCircleRight, FaArrowAltCircleLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
+
 const Motiv = () => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -44,6 +45,10 @@ const Motiv = () => {
   const handlePrev = () => {
     setCurrentIndex((prev) => (prev - 1 + motivContents.length) % motivContents.length);
   };
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
 
   return (
     <div className="relative overflow-hidden min-h-[60vh] transition-colors duration-1000">
@@ -73,7 +78,7 @@ const Motiv = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => navigate('/register')}
+              onClick={handleLogin}
               className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-purple-900
                        px-8 py-4 rounded-full font-bold text-lg shadow-lg
                        transition-all duration-300 flex items-center gap-3 mx-auto"

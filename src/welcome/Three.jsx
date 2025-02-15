@@ -99,6 +99,8 @@ const Three = () => {
     </div>
   );
 
+  
+
   return (
     <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
       <Navigation />
