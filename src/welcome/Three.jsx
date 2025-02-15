@@ -261,22 +261,144 @@ const Three = () => {
      
       {/* Footer */}
       <footer className="bg-gray-100 py-8 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-gray-900 font-bold text-lg mb-4">About Us</h3>
-              <p className="text-gray-600">
-                Connecting Ethiopian entrepreneurs with global investors to foster
-                innovation and growth in the Ethiopian startup ecosystem.
-              </p>
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      {/* About Section */}
+      <div className="space-y-4">
+        <h3 className="text-gray-900 font-bold text-lg mb-4 group hover:text-indigo-600 transition-colors duration-300">
+          <span className="border-b-2 border-transparent group-hover:border-indigo-600 pb-1">
+            About Us
+          </span>
+        </h3>
+        <p className="text-gray-600 hover:text-gray-800 transition-colors duration-300 transform hover:translate-x-1">
+          Connecting Ethiopian entrepreneurs with global investors to foster
+          innovation and growth in the Ethiopian startup ecosystem.
+        </p>
+      </div>
+
+      {/* Quick Links - Horizontal Scroll */}
+      <div className="space-y-4">
+        <h3 className="text-gray-900 font-bold text-lg mb-4 group hover:text-indigo-600 transition-colors duration-300">
+          <span className="border-b-2 border-transparent group-hover:border-indigo-600 pb-1">
+            Quick Links
+          </span>
+        </h3>
+        <div className="grid grid-cols-2 gap-4">
+          {['Startups', 'Investors', 'Success Stories', 'FAQs'].map((item) => (
+            <a
+              key={item}
+              href="#"
+              className="flex items-center p-2 rounded-lg hover:bg-gray-200 transition-all duration-300 group"
+            >
+              <span className="w-2 h-2 bg-indigo-600 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              {item}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* Resources - Card Style */}
+      <div className="space-y-4">
+        <h3 className="text-gray-900 font-bold text-lg mb-4 group hover:text-indigo-600 transition-colors duration-300">
+          <span className="border-b-2 border-transparent group-hover:border-indigo-600 pb-1">
+            Resources
+          </span>
+        </h3>
+        <div className="grid grid-cols-2 gap-3">
+          {['Blog', 'Guides', 'Webinars', 'Toolkit'].map((item) => (
+            <div
+              key={item}
+              className="p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
+            >
+              <span className="text-gray-600 hover:text-indigo-600 transition-colors duration-300">
+                {item}
+              </span>
             </div>
-            {/* Add other footer sections */}
+          ))}
+        </div>
+      </div>
+
+      {/* Contact & Social - Interactive Cards */}
+      <div className="space-y-4">
+        <h3 className="text-gray-900 font-bold text-lg mb-4 group hover:text-indigo-600 transition-colors duration-300">
+          <span className="border-b-2 border-transparent group-hover:border-indigo-600 pb-1">
+            Connect
+          </span>
+        </h3>
+        
+        {/* Contact Cards */}
+        <div className="space-y-3">
+          <div className="p-3 bg-white rounded-lg hover:bg-indigo-50 transition-colors duration-300 group">
+            <div className="flex items-center">
+              <div className="bg-indigo-100 p-2 rounded-lg group-hover:bg-indigo-200 transition-colors duration-300">
+                <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <a href="mailto:info@example.com" className="ml-3 text-gray-600 hover:text-indigo-600 transition-colors duration-300">
+                info@ethiocapital.com
+              </a>
+            </div>
           </div>
-          <div className="border-t border-gray-200 mt-8 pt-8 text-center text-gray-600">
-            <p>&copy; 2024 Ethio Capital. All rights reserved.</p>
+
+          <div className="p-3 bg-white rounded-lg hover:bg-indigo-50 transition-colors duration-300 group">
+            <div className="flex items-center">
+              <div className="bg-indigo-100 p-2 rounded-lg group-hover:bg-indigo-200 transition-colors duration-300">
+                <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-gray-600 hover:text-indigo-600 transition-colors duration-300">
+                  +251 912 345 678
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      </footer>
+
+        {/* Social Media - Animated Icons */}
+        <div className="flex space-x-4 mt-4">
+          {[
+            {name: 'Twitter', icon: 'M23 3a10.9 10.9 0 01-3.14 1.53...'},
+            {name: 'LinkedIn', icon: 'M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2...'},
+            {name: 'Facebook', icon: 'M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z'},
+          ].map((platform) => (
+            <a
+              key={platform.name}
+              href="#"
+              className="p-2 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow duration-300 hover:-translate-y-1"
+            >
+              <svg className="w-6 h-6 text-gray-600 hover:text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d={platform.icon} />
+              </svg>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {/* Copyright Section with Animated Border */}
+    <div className="border-t border-gray-200 mt-8 pt-8 text-center">
+      <div className="relative inline-block group">
+        <span className="text-gray-600 hover:text-indigo-600 transition-colors duration-300">
+          &copy; 2024 Ethio Capital. All rights reserved.
+        </span>
+        <div className="absolute bottom-0 left-0 w-0 h-px bg-indigo-600 group-hover:w-full transition-all duration-500" />
+      </div>
+      <div className="mt-2 flex justify-center space-x-4">
+        <a href="#" className="text-gray-600 hover:text-indigo-600 transition-colors duration-300 relative group">
+          Privacy Policy
+          <span className="absolute bottom-0 left-0 w-0 h-px bg-indigo-600 group-hover:w-full transition-all duration-300" />
+        </a>
+        <a href="#" className="text-gray-600 hover:text-indigo-600 transition-colors duration-300 relative group">
+          Terms of Service
+          <span className="absolute bottom-0 left-0 w-0 h-px bg-indigo-600 group-hover:w-full transition-all duration-300" />
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
     </div>
   );
 };
