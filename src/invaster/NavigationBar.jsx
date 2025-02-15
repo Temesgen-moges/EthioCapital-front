@@ -6,6 +6,8 @@ import {
   Briefcase,
   BookOpen,
   TrendingUp,
+  Menu,
+  X,
 } from "lucide-react";
 import MessageConversationModal from "../Add/MessageConversationModal";
 import setupAxios from "../middleware/MiddleWare";
@@ -34,6 +36,7 @@ const NavigationBar = ({
   setMessages,
 }) => {
   const [selectedMessage, setSelectedMessage] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const notificationToggleRef = useRef(null);
   const notificationDropdownRef = useRef(null);
   const profileToggleRef = useRef(null);
@@ -48,7 +51,6 @@ const NavigationBar = ({
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Handle clicks for notifications dropdown
       if (
         showNotifications &&
         notificationToggleRef.current &&
@@ -59,7 +61,6 @@ const NavigationBar = ({
         onToggleNotifications();
       }
 
-      // Handle clicks for profile dropdown
       if (
         showProfile &&
         profileToggleRef.current &&
@@ -70,7 +71,6 @@ const NavigationBar = ({
         onToggleProfile();
       }
 
-      // Handle clicks for messages dropdown
       if (
         showMessages &&
         messageToggleRef.current &&
@@ -113,11 +113,10 @@ const NavigationBar = ({
   };
 
   useEffect(() => {
-
     if (userData?.role === 'admin') {
       setRole(userData?.role);
       fetchAdminMessages();
-    }else{
+    } else {
       if (userData?._id) {
         dispatch(fetchUnReadMessages(userData?._id));
       }
@@ -138,8 +137,8 @@ const NavigationBar = ({
     } catch (error) {
       console.log(error);
     }
-    // dispatch(fetchUnReadMessages(userData?._id));
   };
+
   const handleMessageSelect = (message) => {
     if (message.conversationId) {
       navigate(`/Startup-Detail/${message.conversationId.idea}`);
@@ -149,11 +148,8 @@ const NavigationBar = ({
         )
       );
       handleReadMessage(message._id);
-    }else if(role === 'admin'){
-
-
+    } else if (role === 'admin') {
       setSelectedMessage(message);
-      // Mark message as read when opened
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === message.id ? { ...msg, isNew: false } : msg
@@ -163,8 +159,6 @@ const NavigationBar = ({
     }
   };
 
-
- 
   return (
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 py-3">
@@ -173,7 +167,20 @@ const NavigationBar = ({
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-blue-600">EthioCapital</h1>
 
-            <div className="flex items-center gap-6">
+            {/* Mobile Menu Button */}
+            <button
+              className="lg:hidden p-2"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6 text-gray-600" />
+              ) : (
+                <Menu className="h-6 w-6 text-gray-600" />
+              )}
+            </button>
+
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center gap-6">
               {/* Messages Dropdown */}
               <div className="relative">
                 <button
@@ -200,115 +207,53 @@ const NavigationBar = ({
                         Recent Conversations
                       </h3>
                     </div>
-
-                    {/* {isAdmin ? (
-                      <> */}
-                        <div className="max-h-96 overflow-y-auto">
-                          {messageData.map((message) => (
+                    <div className="max-h-96 overflow-y-auto">
+                      {messageData.map((message) => (
+                        <div
+                          key={message._id}
+                          className="px-4 py-3 hover:bg-gray-50 cursor-pointer"
+                          onClick={() => handleMessageSelect(message)}
+                        >
+                          <div className="flex items-center gap-3">
                             <div
-                              key={message._id}
-                              className="px-4 py-3 hover:bg-gray-50 cursor-pointer"
-                              onClick={() => handleMessageSelect(message)}
+                              className={`h-8 w-8 ${
+                                message.isNew ? "bg-blue-100" : "bg-gray-100"
+                              } rounded-full flex items-center justify-center`}
                             >
-                              <div className="flex items-center gap-3">
-                                <div
-                                  className={`h-8 w-8 ${
-                                    message.isNew
-                                      ? "bg-blue-100"
-                                      : "bg-gray-100"
-                                  } rounded-full flex items-center justify-center`}
-                                >
-                                  <span
-                                    className={`text-sm font-medium ${
-                                      message.isNew
-                                        ? "text-blue-600"
-                                        : "text-gray-600"
-                                    }`}
-                                  >
-                                    {message.sender.slice(0, 2).toUpperCase()}
-                                  </span>
-                                </div>
-                                <div className="flex-1">
-                                  <div className="flex justify-between items-center">
-                                    <h4 className="text-sm font-medium text-gray-900">
-                                      {message.sender}
-                                      {message.isNew && (
-                                        <span className="ml-2 w-2 h-2 bg-blue-500 rounded-full inline-block" />
-                                      )}
-                                    </h4>
-                                    <span className="text-xs text-gray-500">
-                                      {new Date(
-                                        message.timestamp
-                                      ).toLocaleTimeString([], {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })}
-                                    </span>
-                                  </div>
-                                  <p className="text-sm text-gray-600 truncate">
-                                    {message.text}
-                                  </p>
-                                </div>
-                              </div>
+                              <span
+                                className={`text-sm font-medium ${
+                                  message.isNew ? "text-blue-600" : "text-gray-600"
+                                }`}
+                              >
+                                {message.sender.slice(0, 2).toUpperCase()}
+                              </span>
                             </div>
-                          ))}
-                        </div>
-                      {/* </>
-                    ) : (
-                      <>
-                        <div className="max-h-96 overflow-y-auto">
-                          {messageData.map((message) => (
-                            <div
-                              key={message.id}
-                              className="px-4 py-3 hover:bg-gray-50 cursor-pointer"
-                              onClick={() => handleMessageSelect(message)}
-                            >
-                              <div className="flex items-center gap-3">
-                                <div
-                                  className={`h-8 w-8 ${
-                                    message.isNew
-                                      ? "bg-blue-100"
-                                      : "bg-gray-100"
-                                  } rounded-full flex items-center justify-center`}
-                                >
-                                  <span
-                                    className={`text-sm font-medium ${
-                                      message.isNew
-                                        ? "text-blue-600"
-                                        : "text-gray-600"
-                                    }`}
-                                  >
-                                    {message.sender.slice(0, 2).toUpperCase()}
-                                  </span>
-                                </div>
-                                <div className="flex-1">
-                                  <div className="flex justify-between items-center">
-                                    <h4 className="text-sm font-medium text-gray-900">
-                                      {message.sender}
-                                      {message.isNew && (
-                                        <span className="ml-2 w-2 h-2 bg-blue-500 rounded-full inline-block" />
-                                      )}
-                                    </h4>
-                                    <span className="text-xs text-gray-500">
-                                      {new Date(
-                                        message.timestamp
-                                      ).toLocaleTimeString([], {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })}
-                                    </span>
-                                  </div>
-                                  <p className="text-sm text-gray-600 truncate">
-                                    {message.text}
-                                  </p>
-                                </div>
+                            <div className="flex-1">
+                              <div className="flex justify-between items-center">
+                                <h4 className="text-sm font-medium text-gray-900">
+                                  {message.sender}
+                                  {message.isNew && (
+                                    <span className="ml-2 w-2 h-2 bg-blue-500 rounded-full inline-block" />
+                                  )}
+                                </h4>
+                                <span className="text-xs text-gray-500">
+                                  {new Date(message.timestamp).toLocaleTimeString(
+                                    [],
+                                    {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    }
+                                  )}
+                                </span>
                               </div>
+                              <p className="text-sm text-gray-600 truncate">
+                                {message.text}
+                              </p>
                             </div>
-                          ))}
+                          </div>
                         </div>
-                      </> */}
-                    {/* )} */}
-
+                      ))}
+                    </div>
                     <div className="px-4 py-2 border-t">
                       <button
                         className="w-full text-sm text-blue-600 hover:text-blue-700"
@@ -323,14 +268,6 @@ const NavigationBar = ({
                   </div>
                 )}
               </div>
-
-              {/* Message Conversation Modal */}
-              <MessageConversationModal
-                selectedMessage={selectedMessage}
-                setSelectedMessage={setSelectedMessage}
-                messages={messageData}
-                setMessages={setMessages}
-              />
 
               {/* Notifications Dropdown */}
               <div className="relative">
@@ -415,16 +352,73 @@ const NavigationBar = ({
             </div>
           </div>
 
+          {/* Mobile Menu */}
+          {isMobileMenuOpen && (
+            <div className="lg:hidden space-y-4 pt-4">
+              <div className="flex flex-col space-y-4">
+                <button
+                  onClick={onToggleMessages}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors relative"
+                >
+                  <MessageSquare className="h-5 w-5" />
+                  Messages
+                  {unreadMessages > 0 && (
+                    <span className="ml-2 h-5 w-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">
+                      {unreadMessages}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  onClick={onToggleNotifications}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg"
+                >
+                  <Bell className="h-5 w-5" />
+                  Notifications
+                </button>
+
+                <div className="px-4 py-2">
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600 font-medium">
+                        {userData?.fullName?.slice(0, 2).toUpperCase()}
+                      </span>
+                    </div>
+                    <span className="text-gray-700">{userData?.fullName}</span>
+                  </div>
+                  <div className="mt-2 space-y-2">
+                    <a
+                      href="/Investor-Profile"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"
+                    >
+                      Your Profile
+                    </a>
+                    <a
+                      href="#settings"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"
+                    >
+                      Settings
+                    </a>
+                    <a
+                      href="/login"
+                      onClick={onLogout}
+                      className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-50 rounded-lg"
+                    >
+                      Sign out
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Navigation Tabs */}
-          <div className="flex space-x-6 border-b">
+          <div className="flex space-x-6 border-b overflow-x-auto">
             <button
               onClick={() => {
                 setActiveTab("ideas");
-                // Remove these lines
-                // setIsBlog(false);
-                // setIsIdea(true);
               }}
-              className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "ideas"
                   ? "border-blue-600 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -437,11 +431,8 @@ const NavigationBar = ({
             <button
               onClick={() => {
                 setActiveTab("blogs");
-                // Remove these lines
-                // setIsBlog(true);
-                // setIsIdea(false);
               }}
-              className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "blogs"
                   ? "border-blue-600 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -450,9 +441,10 @@ const NavigationBar = ({
               <BookOpen className="h-5 w-5" />
               Blogs
             </button>
+
             <button
               onClick={() => setActiveTab("trending")}
-              className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "trending"
                   ? "border-blue-600 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -464,6 +456,14 @@ const NavigationBar = ({
           </div>
         </div>
       </div>
+
+      {/* Message Conversation Modal */}
+      <MessageConversationModal
+        selectedMessage={selectedMessage}
+        setSelectedMessage={setSelectedMessage}
+        messages={messageData}
+        setMessages={setMessages}
+      />
     </nav>
   );
 };
