@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:3001");
+const socket = io("https://ethio-capital-back-end-2.onrender.com");
 
 const Message = ({ conversationId, userId, ideaId }) => {
   const [messages, setMessages] = useState([]);

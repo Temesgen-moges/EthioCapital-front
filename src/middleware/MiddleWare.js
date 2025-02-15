@@ -11,7 +11,7 @@ const setupAxios = () => {
   }
 
   // Optionally set a base URL if needed
-  axios.defaults.baseURL = 'http://localhost:3001/api/v1'; // Example base URL
+  axios.defaults.baseURL = 'https://ethio-capital-back-end-2.onrender.com/api/v1'; // Example base URL
 };
 
 export default setupAxios;

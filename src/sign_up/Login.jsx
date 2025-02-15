@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FaEnvelope, FaArrowLeft, FaLock } from "react-icons/fa";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -23,13 +23,13 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:3001/api/v1/login", formData);
+      const response = await axios.post("https://ethio-capital-back-end-2.onrender.com/api/v1/login", formData);
       console.log(response);
       localStorage.setItem("authToken", response.data.token);
       console.log("user role", response.data.user.role);
       console.log("response status", response.status);
 
-      if (response.status === 200 && response.data.user.role === "investor" || response.data.user.role === "entrepreneur") {
+      if (response.status === 200 && (response.data.user.role === "investor" || response.data.user.role === "entrepreneur")) {
         navigate("/entrepreneur-dashboard");
         // } else if (response.status === 200  && response.data.user.role === "entrepreneur") {
         //   navigate("/investor-dashboard");

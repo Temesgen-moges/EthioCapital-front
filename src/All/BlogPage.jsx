@@ -2,6 +2,7 @@ import React, { useState ,useEffect} from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, User, ArrowRight, Calendar, MapPin, FileText, Landmark, X, Download } from 'lucide-react';
 import axios from 'axios';
+import setupAxios from '../middleware/MiddleWare';
 
 // const categoryCounts = contentData.reduce((acc, item) => {
 //   acc[item.category] = (acc[item.category] || 0) + item.newNotifications;
@@ -104,6 +105,8 @@ const BlogsPage = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedItem, setSelectedItem] = useState(null);
   const [contentData, setContentData] = useState([]);
+
+  useEffect(() => { setupAxios(); }, []);
 
   useEffect(() => {
     const fetchData = async () => {

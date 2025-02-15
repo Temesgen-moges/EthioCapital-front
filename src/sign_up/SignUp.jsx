@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaUser, FaArrowLeft, FaEnvelope, FaLock, FaBuilding, FaUserTie, FaFileUpload, FaUniversity, FaGraduationCap, FaLightbulb } from "react-icons/fa";
+import { FaUser, FaArrowLeft, FaEnvelope, FaLock, FaBuilding, FaUserTie, FaLightbulb } from "react-icons/fa";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
-import userImage from "../ass/key.png";
+// import userImage from "../ass/key.png";
 
 
 const SignUp = () => {
@@ -31,9 +31,9 @@ const SignUp = () => {
     // educationDetails: "",
   });
   const navigate = useNavigate();
-  const handleFileChange = (field) => (e) => {
-    setFormData({ ...formData, [field]: e.target.files[0] });
-  };
+  // const handleFileChange = (field) => (e) => {
+  //   setFormData({ ...formData, [field]: e.target.files[0] });
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,7 +42,7 @@ const SignUp = () => {
     //  signup logic here including file uploads
     try {
 
-      const response = await axios.post("http://localhost:3001/api/v1/signup", formData);
+      const response = await axios.post("https://ethio-capital-back-end-2.onrender.com/api/v1/signup", formData);
       console.log(response.data);
      
     } catch (error) {

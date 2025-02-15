@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchUserData } from "../redux/UserSlice";
-import { use } from "react";
-import { set } from "react-hook-form";
+// import { use } from "react";
+// import { set } from "react-hook-form";
 import axios from "axios";
 import setupAxios from "../middleware/MiddleWare";
 
@@ -15,12 +15,12 @@ const MessageConversationModal = ({
   setMessages = () => {}
 }) => {
 
-  useEffect(()=>{
+  // useEffect(()=>{
 
-    console.log("selected message",selectedMessage)
-    console.log("messages",messages)
+  //   console.log("selected message",selectedMessage)
+  //   console.log("messages",messages)
 
-  },[])
+  // },[])
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.userData);
   const [responseText, setResponseText] = useState("");

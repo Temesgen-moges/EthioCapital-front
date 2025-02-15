@@ -12,6 +12,7 @@ import BlogAdminForm from "./Add/BlogAdminForm";
 import AdminDashboard from "./Add/AdminDashboard";
 import InvestorProfile from "./enterpreners/InvestorProfile";
 import InvestorProfileForm from "./enterpreners/InvestorProfileForm";
+import EditIdeaPage from "./invaster/EditIdeaPage";
 
 const AppRouter = () => {
   return (
@@ -30,9 +31,10 @@ const AppRouter = () => {
         {/* Corrected route path */}
         <Route path="/Investor-Profile" element={<InvestorProfile />} />
         <Route path="/Investor-profile-form" element={<InvestorProfileForm />} />
-        <Route path="*" element={<Welcome />} />
+        <Route path="*" element={<Welcome />} />,
+        <Route path="/edit-idea/:id" element={<EditIdeaPage />} />
       </Routes>
-    </Router>
+    </Router>  
   );
 };
 export default AppRouter;
