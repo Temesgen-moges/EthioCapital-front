@@ -13,6 +13,8 @@ import AdminDashboard from "./Add/AdminDashboard";
 import InvestorProfile from "./enterpreners/InvestorProfile";
 import InvestorProfileForm from "./enterpreners/InvestorProfileForm";
 import EditIdeaPage from "./invaster/EditIdeaPage";
+import BoardDashboard from "./bord/BoardDashboard";
+import ReleaseFunds from "./bord/ReleaseFunds";
 
 const AppRouter = () => {
   return (
@@ -33,6 +35,8 @@ const AppRouter = () => {
         <Route path="/Investor-profile-form" element={<InvestorProfileForm />} />
         <Route path="*" element={<Welcome />} />,
         <Route path="/edit-idea/:id" element={<EditIdeaPage />} />
+        <Route path="/BoardDashboard" element={<BoardDashboard/>} />
+        <Route path="/release-funds" element={<ReleaseFunds/>} />
       </Routes>
     </Router>  
   );
