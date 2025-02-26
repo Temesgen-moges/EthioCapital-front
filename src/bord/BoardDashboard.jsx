@@ -5,6 +5,9 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { FilePlus } from 'lucide-react';
+import Documents from "./Documents";
+import { ChevronDown, ChevronUp } from 'lucide-react'; 
+
 
 const BoardDashboard = () => {
   const [activeTab, setActiveTab] = useState('discussion');
@@ -19,6 +22,7 @@ const BoardDashboard = () => {
     extendTime: 0,
     refundInvestors: 0
   });
+  const [showAllMembers, setShowAllMembers] = useState(false);
   const [currentUser] = useState('Temesgen');
   const [selectedMember, setSelectedMember] = useState(null);
   const [showNotification, setShowNotification] = useState(false);
@@ -207,34 +211,59 @@ const BoardDashboard = () => {
   </div>
 </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4">Board Members</h2>
-                {boardMembers.map(member => (
-                  <div 
-                    key={member.id} 
-                    className="mb-6 p-4 border rounded-lg hover:border-blue-500 cursor-pointer"
-                    onClick={() => setSelectedMember(member)}
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">Board Members</h2>
+                  <button 
+                    onClick={() => setShowAllMembers(!showAllMembers)}
+                    className="flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm"
                   >
-                    <div className="flex items-center gap-4 mb-2">
-                      <div className="text-2xl">{member.image}</div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium">{member.name}</span>
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            member.status === 'online' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                          }`}>
-                            {member.status}
-                          </span>
+                    {showAllMembers ? 'Show Less' : 'Show More'}
+                    {showAllMembers ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </button>
+                </div>
+
+                {boardMembers
+                  .slice(0, showAllMembers ? boardMembers.length : 3)
+                  .map(member => (
+                    <div 
+                      key={member.id} 
+                      className="mb-4 p-4 border rounded-lg hover:border-blue-500 cursor-pointer transition-colors"
+                      onClick={() => setSelectedMember(member)}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="text-2xl bg-blue-50 p-2 rounded-full">
+                          {member.image}
                         </div>
-                        <p className="text-sm text-gray-600">{member.role}</p>
-                        <p className="text-sm text-blue-600">Shares: {member.shares}</p>
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center">
+                            <span className="font-medium">{member.name}</span>
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              member.status === 'online' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                            }`}>
+                              {member.status}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 mt-1">{member.role}</p>
+                          <div className="mt-2 flex items-center gap-2">
+                            <span className="text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                              Shares: {member.shares}
+                            </span>
+                            <span className="text-sm text-gray-500">{member.contact}</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-600 mt-2">{member.bio}</p>
+                  ))}
+
+                {!showAllMembers && boardMembers.length > 3 && (
+                  <div className="text-center text-sm text-gray-500 mt-4">
+                    {boardMembers.length - 3} more members available
                   </div>
-                ))}
+                )}
               </div>
+              
 
               <div className="bg-white rounded-lg shadow p-6 lg:col-span-2">
                 <div className="flex gap-4 mb-4">
@@ -339,6 +368,13 @@ const BoardDashboard = () => {
             </div>
           </>
         );
+        case 'documents':
+      return <Documents />;
+
+    case 'settings':
+      return null;
+
+    
       default:
         return null;
     }

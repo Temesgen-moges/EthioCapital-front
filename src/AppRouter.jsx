@@ -15,6 +15,7 @@ import InvestorProfileForm from "./enterpreners/InvestorProfileForm";
 import EditIdeaPage from "./invaster/EditIdeaPage";
 import BoardDashboard from "./bord/BoardDashboard";
 import ReleaseFunds from "./bord/ReleaseFunds";
+import Documents from "./bord/Documents";
 
 const AppRouter = () => {
   return (
@@ -37,6 +38,7 @@ const AppRouter = () => {
         <Route path="/edit-idea/:id" element={<EditIdeaPage />} />
         <Route path="/BoardDashboard" element={<BoardDashboard/>} />
         <Route path="/release-funds" element={<ReleaseFunds/>} />
+        <Route path="/Documents" element={<Documents/>} />
       </Routes>
     </Router>  
   );
