@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { FilePlus } from 'lucide-react';
 import Documents from "./Documents";
 import { ChevronDown, ChevronUp } from 'lucide-react'; 
+import NavigationBar from '../invaster/NavigationBar';
 
 
 const BoardDashboard = () => {
@@ -34,7 +35,7 @@ const BoardDashboard = () => {
   const boardMembers = [
     { 
       id: 1, 
-      name: 'John Smith', 
+      name: 'Temesgen Moges', 
       role: 'Chairman (Entrepreneur)', 
       shares: '30%', 
       status: 'online',
