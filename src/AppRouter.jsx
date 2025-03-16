@@ -17,6 +17,7 @@ import BoardDashboard from "./bord/BoardDashboard";
 import ReleaseFunds from "./bord/ReleaseFunds";
 import Documents from "./bord/Documents";
 import PaymentForm from "./payment/PaymentForm";
+import Chatbot from "./Ai/Chatbot";
 
 const AppRouter = () => {
   return (
@@ -41,6 +42,7 @@ const AppRouter = () => {
         <Route path="/release-funds" element={<ReleaseFunds/>} />
         <Route path="/Documents" element={<Documents/>} />
         <Route path="/PaymentForm" element={<PaymentForm/>} />
+        <Route path="/Chatbot" element={<Chatbot/>}/>
       </Routes>
     </Router>  
   );

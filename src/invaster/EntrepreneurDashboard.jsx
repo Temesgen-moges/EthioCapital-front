@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Heart } from "lucide-react";
+import { Search, Heart, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { PlusIcon, TrashIcon, PencilIcon } from "@heroicons/react/outline";
 import axios from "axios";
@@ -299,7 +299,7 @@ function EntrepreneurDashboard() {
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() =>
                                   navigate(`/edit-idea/${idea._id}`)
-                                } // This is correct
+                                }
                                 className="p-2 bg-blue-200 text-blue-700 rounded-full hover:bg-blue-300 transition-colors"
                                 title="Edit idea"
                               >
@@ -445,12 +445,54 @@ function EntrepreneurDashboard() {
         )}
       </div>
 
+      {/* Chatbot Button - Left Side with Animations */}
+      <motion.button
+        onClick={() => navigate("/Chatbot")}
+        className="fixed bottom-6 left-6 p-4 bg-green-600 text-white rounded-full shadow-lg z-50"
+        animate={{
+          y: [0, -15, 0],
+          scale: [1, 1.1, 1]
+        }}
+        transition={{
+          duration: 1.5,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        whileHover={{
+          scale: 1.2,
+          rotate: [0, 10, -10, 0],
+          transition: { duration: 0.3 }
+        }}
+        whileTap={{
+          scale: 0.9,
+          rotate: -5
+        }}
+      >
+        <MessageCircle className="h-6 w-6" />
+        <motion.span
+          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 200 }}
+        >
+          !
+        </motion.span>
+      </motion.button>
+
+      {/* Submit Idea Button - Right Side */}
       {userData?.role === "entrepreneur" && (
         <motion.button
           onClick={() => navigate("/submit-idea")}
-          className="fixed bottom-6 right-6 p-4 bg-blue-600 text-white rounded-full shadow-lg transition-transform hover:scale-105"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
+          className="fixed bottom-6 right-6 p-4 bg-blue-600 text-white rounded-full shadow-lg z-50"
+          whileHover={{
+            scale: 1.1,
+            rotate: 10,
+            transition: { duration: 0.2 }
+          }}
+          whileTap={{
+            scale: 0.9,
+            rotate: -10
+          }}
         >
           <PlusIcon className="h-6 w-6" />
         </motion.button>
