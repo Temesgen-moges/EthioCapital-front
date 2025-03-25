@@ -18,6 +18,8 @@ import ReleaseFunds from "./bord/ReleaseFunds";
 import Documents from "./bord/Documents";
 import PaymentForm from "./payment/PaymentForm";
 import Chatbot from "./Ai/Chatbot";
+import StudentApplicationForm from "./student/StudentApplicationForm";
+import FundingTypeSelector from "./student/FundingTypeSelector";
 
 const AppRouter = () => {
   return (
@@ -43,6 +45,8 @@ const AppRouter = () => {
         <Route path="/Documents" element={<Documents/>} />
         <Route path="/PaymentForm" element={<PaymentForm/>} />
         <Route path="/Chatbot" element={<Chatbot/>}/>
+        <Route path="/StudentApplicationForm" element={<StudentApplicationForm/>} />
+          <Route path="/FundingTypeSelector" element={<FundingTypeSelector/>}/>
       </Routes>
     </Router>  
   );

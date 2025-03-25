@@ -193,7 +193,7 @@ const SubmitIdeaForm = () => {
     <div >
       <nav className="fixed top-0 left-0 w-full bg-blue-600 text-white p-4 flex items-center shadow-md">
         <button
-          onClick={() => navigate('/Entrepreneur-dashboard')}
+          onClick={() => navigate('/FundingTypeSelector')}
           className="flex items-center space-x-2 text-white text-lg font-medium"
         >
           <ChevronLeft size={24} />

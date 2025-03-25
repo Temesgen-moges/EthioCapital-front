@@ -14,6 +14,7 @@ import {
 } from "../redux/BussinessIdeaSlice";
 import BlogsPage from "../All/BlogPage";
 import NavigationBar from "./NavigationBar";
+import ChatPage from "../component/chat/ChatPage";
 
 const categories = [
   "All",
@@ -441,6 +442,7 @@ function EntrepreneurDashboard() {
             )}
 
             {activeTab === "blogs" && <BlogsPage />}
+            {activeTab === "chat" && <ChatPage />}
           </>
         )}
       </div>
