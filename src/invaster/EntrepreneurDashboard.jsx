@@ -15,7 +15,9 @@ import {
 import BlogsPage from "../All/BlogPage";
 import NavigationBar from "./NavigationBar";
 import ChatPage from "../component/chat/ChatPage";
+import io from "socket.io-client";
 
+// Categories for filtering ideas
 const categories = [
   "All",
   "Agriculture",
@@ -27,6 +29,7 @@ const categories = [
   "Tourism",
 ];
 
+// Dashboard for entrepreneurs and investors to browse ideas and manage complaints
 function EntrepreneurDashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -37,14 +40,20 @@ function EntrepreneurDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [showComplaintForm, setShowComplaintForm] = useState(false);
   const [complaint, setComplaint] = useState("");
+  const [complaints, setComplaints] = useState([]); // Store user's complaints
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [ideaToDelete, setIdeaToDelete] = useState(null);
+  const [ideaConversations, setIdeaConversations] = useState({});
+  const [socket, setSocket] = useState(null);
 
   const { userData } = useSelector((state) => state.userData);
   const { BussinessIdea } = useSelector((state) => state.businessIdea);
+  const messages = useSelector(
+    (state) => state.messageDatas.messageDatas || []
+  );
   const [showMessages, setShowMessages] = useState(false);
-  const [messages, setMessages] = useState([
+  const [dashboardMessages, setDashboardMessages] = useState([
     {
       id: 1,
       sender: "Admin Support",
@@ -55,7 +64,7 @@ function EntrepreneurDashboard() {
     },
   ]);
 
-  // Handlers for notifications and profile
+  // Toggle handlers for UI elements
   const handleNotificationsToggle = () => {
     setShowNotifications((prev) => !prev);
     setShowProfile(false);
@@ -72,18 +81,125 @@ function EntrepreneurDashboard() {
     setShowProfile(false);
   };
 
+  // Initialize Socket.IO and fetch initial data
   useEffect(() => {
     setupAxios();
     dispatch(fetchUserData());
     dispatch(fetchBussinessIdea());
-  }, [dispatch]);
 
+    // Connect to Socket.IO
+    const socketInstance = io("http://localhost:3001");
+    setSocket(socketInstance);
+
+    // Join user room for real-time updates
+    if (userData?._id) {
+      socketInstance.emit("joinUserRoom", userData._id);
+    }
+
+    // Fetch user's complaints
+    const fetchComplaints = async () => {
+      try {
+        const response = await axios.get(`/api/v1/complaints`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        });
+        // Filter complaints for the current user (non-admin)
+        const userComplaints = response.data.filter(
+          (c) => c.userId._id === userData._id
+        );
+        setComplaints(userComplaints);
+      } catch (error) {
+        console.error("Error fetching complaints:", error);
+      }
+    };
+
+    if (userData?._id) fetchComplaints();
+
+    // Socket.IO listeners
+    socketInstance.on("newReply", (updatedComplaint) => {
+      if (updatedComplaint.userId === userData._id) {
+        setComplaints((prev) =>
+          prev.map((c) =>
+            c._id === updatedComplaint._id ? updatedComplaint : c
+          )
+        );
+      }
+    });
+
+    socketInstance.on("complaintUpdated", (updatedComplaint) => {
+      if (updatedComplaint.userId === userData._id) {
+        setComplaints((prev) =>
+          prev.map((c) =>
+            c._id === updatedComplaint._id ? updatedComplaint : c
+          )
+        );
+      }
+    });
+
+    socketInstance.on("complaintDeleted", (deletedId) => {
+      setComplaints((prev) => prev.filter((c) => c._id !== deletedId));
+    });
+
+    // Cleanup
+    return () => {
+      socketInstance.disconnect();
+    };
+  }, [dispatch, userData?._id]);
+
+  // Sync ideas and fetch conversations
   useEffect(() => {
     setIsLoading(true);
     setIdeas(BussinessIdea);
     dispatch(setBussinessIdea(BussinessIdea));
+  
+    const fetchAllConversations = async () => {
+      try {
+        const convPromises = BussinessIdea.filter(
+          (idea) => idea.user?._id === userData?._id
+        ).map((idea) =>
+          axios.get(`${axios.defaults.baseURL}/conversations/idea/${idea._id}`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+          })
+        );
+        const responses = await Promise.all(convPromises);
+        const convMap = {};
+        responses.forEach((res, index) => {
+          const ideaId = BussinessIdea.filter(
+            (idea) => idea.user?._id === userData?._id
+          )[index]._id;
+          convMap[ideaId] = res.data;
+        });
+        setIdeaConversations(convMap);
+  
+        // Create a new array with unread counts instead of mutating the original
+        const updatedIdeas = BussinessIdea.map((idea) => {
+          const convs = convMap[idea._id] || [];
+          const unread = convs.reduce((count, conv) => {
+            return (
+              count +
+              messages.filter(
+                (msg) =>
+                  msg.conversationId === conv._id &&
+                  !msg.read &&
+                  msg.recipient === userData?._id
+              ).length
+            );
+          }, 0);
+          return { ...idea, unreadCount: unread }; // Spread operator creates a new object
+        });
+  
+        setIdeas(updatedIdeas); // Update state with the new array
+      } catch (error) {
+        console.error("Error fetching conversations:", error);
+      }
+    };
+  
+    if (userData?.role === "entrepreneur" && BussinessIdea.length > 0) {
+      fetchAllConversations();
+    }
     setIsLoading(false);
-  }, [BussinessIdea, dispatch]);
+  }, [BussinessIdea, dispatch, userData, messages]);
 
   const logout = () => {
     localStorage.removeItem("authToken");
@@ -91,10 +207,20 @@ function EntrepreneurDashboard() {
     navigate("/login");
   };
 
+  // Handle complaint submission
   const handleComplaintSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("/compliant", { complaint });
+      const response = await axios.post(
+        "/api/v1/complaint",
+        { responseText: complaint },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+      setComplaints((prev) => [...prev, response.data]);
       setComplaint("");
       setShowComplaintForm(false);
     } catch (error) {
@@ -102,10 +228,22 @@ function EntrepreneurDashboard() {
     }
   };
 
-  // Delete handler
+  // Delete a complaint
+  const handleDeleteComplaint = async (complaintId) => {
+    try {
+      await axios.delete(`/api/v1/complaint/${complaintId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      });
+      // Socket event will handle removal
+    } catch (error) {
+      console.error("Error deleting complaint:", error);
+    }
+  };
+
   const handleDelete = async () => {
     if (!ideaToDelete) return;
-
     try {
       await axios.delete(`/delete-idea/${ideaToDelete}`);
       dispatch(fetchBussinessIdea());
@@ -116,7 +254,6 @@ function EntrepreneurDashboard() {
     }
   };
 
-  // Filtering logic
   const filteredIdeas = ideas.filter((idea) => {
     const matchesCategory =
       selectedCategory === "All" || idea.businessCategory === selectedCategory;
@@ -126,7 +263,6 @@ function EntrepreneurDashboard() {
     return matchesCategory && matchesSearch;
   });
 
-  // Interest handler
   const handleInterest = (ideaId) => {
     setIdeas(
       ideas.map((idea) => {
@@ -158,8 +294,8 @@ function EntrepreneurDashboard() {
         onLogout={logout}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        messageData={messages}
-        setMessages={setMessages}
+        messageData={dashboardMessages}
+        setMessages={setDashboardMessages}
       />
 
       {/* Delete Confirmation Modal */}
@@ -218,36 +354,74 @@ function EntrepreneurDashboard() {
           </div>
         )}
 
+        {/* Enhanced Complaint Form with Real-time Updates */}
         {showComplaintForm && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <form
-              onSubmit={handleComplaintSubmit}
-              className="bg-white p-8 rounded-lg shadow-lg w-96"
-            >
-              <h2 className="text-xl font-bold mb-4">Contact Admin</h2>
-              <textarea
-                value={complaint}
-                onChange={(e) => setComplaint(e.target.value)}
-                className="w-full h-32 p-2 border rounded-lg mb-4 resize-none"
-                placeholder="Describe your issue or concern..."
-                required
-              />
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowComplaintForm(false)}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Submit
-                </button>
+            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">
+                Contact Admin
+              </h2>
+              <form onSubmit={handleComplaintSubmit}>
+                <textarea
+                  value={complaint}
+                  onChange={(e) => setComplaint(e.target.value)}
+                  className="w-full h-32 p-3 border border-gray-300 rounded-lg mb-4 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Describe your issue or concern..."
+                  required
+                />
+                <div className="flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowComplaintForm(false)}
+                    className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Submit
+                  </button>
+                </div>
+              </form>
+
+              {/* Display User's Complaints */}
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold mb-2">Your Complaints</h3>
+                {complaints.length === 0 ? (
+                  <p className="text-gray-500">No complaints submitted yet.</p>
+                ) : (
+                  <ul className="space-y-4 max-h-40 overflow-y-auto">
+                    {complaints.map((c) => (
+                      <li key={c._id} className="p-3 bg-gray-50 rounded-lg">
+                        <p className="text-gray-700">{c.description}</p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {c.isNew ? "Pending" : "Read"} •{" "}
+                          {new Date(c.createdAt).toLocaleDateString()}
+                        </p>
+                        {c.replies.length > 0 && (
+                          <div className="mt-2">
+                            <p className="text-sm font-semibold text-gray-600">
+                              Admin Reply:
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {c.replies[0].message}
+                            </p>
+                          </div>
+                        )}
+                        <button
+                          onClick={() => handleDeleteComplaint(c._id)}
+                          className="mt-2 text-sm text-red-600 hover:underline"
+                        >
+                          Delete
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-            </form>
+            </div>
           </div>
         )}
 
@@ -267,6 +441,7 @@ function EntrepreneurDashboard() {
                   )
                   .map((idea) => {
                     const isOwnIdea = idea.user?._id === userData?._id;
+                    const unreadCount = idea.unreadCount || 0;
 
                     return (
                       <motion.div
@@ -285,10 +460,15 @@ function EntrepreneurDashboard() {
                         }`}
                       >
                         {isOwnIdea && (
-                          <div className="absolute top-2 left-2">
+                          <div className="absolute top-2 left-2 flex items-center gap-2">
                             <span className="px-3 py-1 bg-blue-600 text-white text-sm rounded-full">
                               My Idea
                             </span>
+                            {unreadCount > 0 && (
+                              <span className="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
+                                {unreadCount}
+                              </span>
+                            )}
                           </div>
                         )}
 
@@ -447,28 +627,18 @@ function EntrepreneurDashboard() {
         )}
       </div>
 
-      {/* Chatbot Button - Left Side with Animations */}
+      {/* Chatbot Button */}
       <motion.button
         onClick={() => navigate("/Chatbot")}
         className="fixed bottom-6 left-6 p-4 bg-green-600 text-white rounded-full shadow-lg z-50"
-        animate={{
-          y: [0, -15, 0],
-          scale: [1, 1.1, 1]
-        }}
-        transition={{
-          duration: 1.5,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
+        animate={{ y: [0, -15, 0], scale: [1, 1.1, 1] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         whileHover={{
           scale: 1.2,
           rotate: [0, 10, -10, 0],
-          transition: { duration: 0.3 }
+          transition: { duration: 0.3 },
         }}
-        whileTap={{
-          scale: 0.9,
-          rotate: -5
-        }}
+        whileTap={{ scale: 0.9, rotate: -5 }}
       >
         <MessageCircle className="h-6 w-6" />
         <motion.span
@@ -481,20 +651,13 @@ function EntrepreneurDashboard() {
         </motion.span>
       </motion.button>
 
-      {/* Submit Idea Button - Right Side */}
+      {/* Submit Idea Button */}
       {userData?.role === "entrepreneur" && (
         <motion.button
-          onClick={() => navigate("/submit-idea")}
+          onClick={() => navigate("/FundingTypeSelector")}
           className="fixed bottom-6 right-6 p-4 bg-blue-600 text-white rounded-full shadow-lg z-50"
-          whileHover={{
-            scale: 1.1,
-            rotate: 10,
-            transition: { duration: 0.2 }
-          }}
-          whileTap={{
-            scale: 0.9,
-            rotate: -10
-          }}
+          whileHover={{ scale: 1.1, rotate: 10, transition: { duration: 0.2 } }}
+          whileTap={{ scale: 0.9, rotate: -10 }}
         >
           <PlusIcon className="h-6 w-6" />
         </motion.button>

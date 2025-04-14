@@ -1,20 +1,27 @@
-import axios from 'axios';
+import axios from "axios";
 
-// Set up the Authorization header globally with the token (middleware)
 const setupAxios = () => {
-  const token = localStorage.getItem("authToken");
+  // Set base URL for all requests
+  axios.defaults.baseURL = "http://localhost:3001/api/v1"; // Adjust for production if needed
+  // axios.defaults.baseURL = 'https://ethio-capital-back-end-2.onrender.com/api/v1'; // Example base URL
 
-  if (token) {
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  } else {
-    console.log("No token found");
-  }
-
-  // Optionally set a base URL if needed
-  axios.defaults.baseURL = 'https://ethio-capital-back-end-2.onrender.com/api/v1'; // Example base URL
+  // Add request interceptor to include token and headers
+  axios.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem("authToken");
+      if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
+      }
+      // Ensure Content-Type is set appropriately if not already specified
+      if (!config.headers["Content-Type"]) {
+        config.headers["Content-Type"] = "application/json";
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
 };
 
 export default setupAxios;
-
-
- 

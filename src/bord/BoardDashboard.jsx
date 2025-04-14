@@ -1,14 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   MessageSquare, DollarSign, Clock, CheckCircle, X, Video, 
-  Activity, Send, AlertCircle, FileText, Settings, Users 
+  Activity, Send, AlertCircle, FileText, Settings, Users, ChevronLeft
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { FilePlus } from 'lucide-react';
 import Documents from "./Documents";
 import { ChevronDown, ChevronUp } from 'lucide-react'; 
 import NavigationBar from '../invaster/NavigationBar';
-
 
 const BoardDashboard = () => {
   const [activeTab, setActiveTab] = useState('discussion');
@@ -128,7 +127,6 @@ const BoardDashboard = () => {
   }, [messages]);
   const navigate = useNavigate();
 
-
   const chairman = boardMembers.find(member => member.role.includes('Chairman'));
 
   const renderConfirmationModal = () => (
@@ -185,34 +183,33 @@ const BoardDashboard = () => {
         return (
           <>
             <div className="bg-white rounded-lg shadow p-6 mb-6">
-  <div className="flex justify-between items-center">
-    <div>
-      <h2 className="text-xl font-bold">Project Overview</h2>
-      <p className="text-gray-600">Total Investment: ${currentFunds.toLocaleString()}</p>
-      <p className="text-gray-600">Required Votes for Approval: 3/5</p>
-    </div>
-    <div className="flex gap-4">
-      {/* Add this Create Proposal button */}
-      {currentUser === 'Temesgen' && (
-        <button 
-          onClick={() => navigate('/release-funds')}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-2"
-        >
-          <FilePlus size={18} />
-          Create Proposal
-        </button>
-      )}
-      <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-        Generate Report
-      </button>
-      <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-        Schedule Meeting
-      </button>
-    </div>
-  </div>
-</div>
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-bold">Project Overview</h2>
+                  <p className="text-gray-600">Total Investment: ${currentFunds.toLocaleString()}</p>
+                  <p className="text-gray-600">Required Votes for Approval: 3/5</p>
+                </div>
+                <div className="flex gap-4">
+                  {currentUser === 'Temesgen' && (
+                    <button 
+                      onClick={() => navigate('/release-funds')}
+                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-2"
+                    >
+                      <FilePlus size={18} />
+                      Create Proposal
+                    </button>
+                  )}
+                  <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    Generate Report
+                  </button>
+                  <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                    Schedule Meeting
+                  </button>
+                </div>
+              </div>
+            </div>
 
-<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-semibold">Board Members</h2>
@@ -265,7 +262,6 @@ const BoardDashboard = () => {
                 )}
               </div>
               
-
               <div className="bg-white rounded-lg shadow p-6 lg:col-span-2">
                 <div className="flex gap-4 mb-4">
                   <button
@@ -369,13 +365,10 @@ const BoardDashboard = () => {
             </div>
           </>
         );
-        case 'documents':
-      return <Documents />;
-
-    case 'settings':
-      return null;
-
-    
+      case 'documents':
+        return <Documents />;
+      case 'settings':
+        return null;
       default:
         return null;
     }
@@ -383,10 +376,19 @@ const BoardDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* Sidebar with Back Button */}
       <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
-        <div className="p-6">
-          <h1 className="text-2xl font-bold text-blue-600">EthioCapital</h1>
-          <p className="text-sm text-gray-600">Board Management System</p>
+        <div className="p-6 flex items-center gap-2">
+          <button 
+            onClick={() => navigate('/Investor-Profile')}
+            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <ChevronLeft size={24} className="text-gray-600" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-blue-600">EthioCapital</h1>
+            <p className="text-sm text-gray-600">Board Management System</p>
+          </div>
         </div>
         <nav className="mt-6">
           {[
