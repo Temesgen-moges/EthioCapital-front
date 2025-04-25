@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronRight,
@@ -6,26 +6,19 @@ import {
   Upload,
   Plus,
   X,
-  Building,
-  DollarSign,
-  Users,
-  FileText,
-  Briefcase,
-  Target,
-  LineChart
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
 import { useSelector, useDispatch } from 'react-redux';
 import { addBussinessIdea } from '../redux/BussinessIdeaSlice';
 import { fetchUserData } from '../redux/UserSlice';
 
-
 const SubmitIdeaForm = () => {
   const [step, setStep] = useState(1);
+  const [submissionMessage, setSubmissionMessage] = useState('');
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
-    // Basic Information
     title: '',
     entrepreneurName: '',
     entrepreneurImage: null,
@@ -33,32 +26,25 @@ const SubmitIdeaForm = () => {
     entrepreneurEducation: '',
     entrepreneurLocation: '',
     businessCategory: '',
-
-    // Business Details
     overview: '',
     problemStatement: '',
     solution: '',
     marketSize: '',
     currentStage: '',
-
-    // Financial Information
     fundingNeeded: '',
     fundingRaised: '',
     useOfFunds: [],
+    investmentTimeline: '', // Will be selected from dropdown
+    entrepreneurEquity: '',
+    investorEquity: '',
     financials: {
       valuation: '',
       revenue2023: '',
       projectedRevenue2024: '',
       breakEvenPoint: '',
     },
-
-    // Traction & Team
     traction: [],
-    team: [
-      { name: '', role: '', expertise: '' }
-    ],
-
-    // Documents
+    team: [{ name: '', role: '', expertise: '' }],
     documents: {
       businessRegistration: null,
       financialProjections: null,
@@ -66,67 +52,77 @@ const SubmitIdeaForm = () => {
       pitchDeck: null,
       teamCertifications: null,
       marketResearchReport: null,
-    }
+    },
   });
 
   const [newFundUse, setNewFundUse] = useState('');
   const [newTraction, setNewTraction] = useState('');
 
-  
-  const handleNext = () => setStep(step + 1);
-  const handleBack = () => setStep(step - 1);
+  const handleNext = () => {
+    if (step < 5) {
+      setStep(step + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (step > 1) {
+      setStep(step - 1);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData((prev) => {
+      if (name === 'entrepreneurEquity') {
+        const entrepreneurEquity = value ? parseFloat(value) : '';
+        const investorEquity = entrepreneurEquity ? (100 - entrepreneurEquity).toFixed(2) : '';
+        return {
+          ...prev,
+          [name]: value,
+          investorEquity: investorEquity.toString(),
+        };
+      }
+      return { ...prev, [name]: value };
+    });
   };
 
   const handleFinancialChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      financials: {
-        ...prev.financials,
-        [name]: value
-      }
+      financials: { ...prev.financials, [name]: value },
     }));
   };
 
   const handleFileChange = (e, docType) => {
     const file = e.target.files[0];
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      documents: {
-        ...prev.documents,
-        [docType]: file
-      }
+      documents: { ...prev.documents, [docType]: file },
     }));
   };
 
   const handleAddTeamMember = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      team: [...prev.team, { name: '', role: '', expertise: '' }]
+      team: [...prev.team, { name: '', role: '', expertise: '' }],
     }));
   };
 
   const handleTeamMemberChange = (index, field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       team: prev.team.map((member, i) =>
         i === index ? { ...member, [field]: value } : member
-      )
+      ),
     }));
   };
 
   const handleAddFundUse = () => {
     if (newFundUse.trim()) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        useOfFunds: [...prev.useOfFunds, newFundUse.trim()]
+        useOfFunds: [...prev.useOfFunds, newFundUse.trim()],
       }));
       setNewFundUse('');
     }
@@ -134,9 +130,9 @@ const SubmitIdeaForm = () => {
 
   const handleAddTraction = () => {
     if (newTraction.trim()) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        traction: [...prev.traction, newTraction.trim()]
+        traction: [...prev.traction, newTraction.trim()],
       }));
       setNewTraction('');
     }
@@ -147,12 +143,12 @@ const SubmitIdeaForm = () => {
     if (file) {
       try {
         const base64 = await convertFileToBase64(file);
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          entrepreneurImage: base64 // now photo is a serializable string
+          entrepreneurImage: base64,
         }));
       } catch (error) {
-        console.error("Error converting file:", error);
+        console.error('Error converting file:', error);
       }
     }
   };
@@ -166,31 +162,41 @@ const SubmitIdeaForm = () => {
     });
   };
 
-  const handleSubmit =async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (step !== 5) {
+      return;
+    }
     try {
       await dispatch(addBussinessIdea(formData)).unwrap();
-      // console.log('Form submitted successfully:', formData);
-      
+      setSubmissionMessage('Sent to admin for approval.');
     } catch (error) {
-      console.log('Error submitting form:', error);
-      
+      console.error('Error submitting form:', error);
+      setSubmissionMessage('Error submitting form. Please try again.');
     }
-    // console.log('Form submitted:', formData);
   };
 
   useEffect(() => {
-    dispatch(fetchUserData()); // Ensure this function is being called
+    dispatch(fetchUserData());
   }, [dispatch]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (step === 5) {
+        handleSubmit(e);
+      }
+    }
+  };
+
   const stepVariants = {
     initial: { opacity: 0, x: 50 },
     animate: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: -50 }
+    exit: { opacity: 0, x: -50 },
   };
-  const navigate = useNavigate();
+
   return (
-    <div >
+    <div>
       <nav className="fixed top-0 left-0 w-full bg-blue-600 text-white p-4 flex items-center shadow-md">
         <button
           onClick={() => navigate('/FundingTypeSelector')}
@@ -210,7 +216,12 @@ const SubmitIdeaForm = () => {
             Submit Your Business Idea
           </h1>
 
-          {/* Progress Bar */}
+          {submissionMessage && (
+            <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-lg text-center">
+              {submissionMessage}
+            </div>
+          )}
+
           <div className="mb-8">
             <div className="h-2 bg-gray-200 rounded-full">
               <motion.div
@@ -229,16 +240,11 @@ const SubmitIdeaForm = () => {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
             <AnimatePresence mode="wait">
               {step === 1 && (
-                <motion.div
-                  key="step1"
-                  {...stepVariants}
-                  className="space-y-4"
-                >
+                <motion.div key="step1" {...stepVariants} className="space-y-4">
                   <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
-
                   <input
                     type="text"
                     name="title"
@@ -247,7 +253,6 @@ const SubmitIdeaForm = () => {
                     onChange={handleChange}
                     className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                   />
-
                   <input
                     type="text"
                     name="entrepreneurName"
@@ -256,8 +261,12 @@ const SubmitIdeaForm = () => {
                     onChange={handleChange}
                     className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                   />
-
-                  <label htmlFor="entrepreneurImageInput" className="block text-sm font-medium text-gray-700 mb-2">Upload Entrepreneur's Picture</label>
+                  <label
+                    htmlFor="entrepreneurImageInput"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Upload Entrepreneur's Picture
+                  </label>
                   <div className="flex items-center gap-4">
                     <input
                       type="file"
@@ -267,9 +276,16 @@ const SubmitIdeaForm = () => {
                       className="hidden"
                       id="entrepreneurImageInput"
                     />
-                    <label htmlFor="entrepreneurImageInput" className="cursor-pointer bg-blue-500 text-white py-2 px-4 rounded-lg inline-block">Choose File</label>
+                    <label
+                      htmlFor="entrepreneurImageInput"
+                      className="cursor-pointer bg-blue-500 text-white py-2 px-4 rounded-lg inline-block"
+                    >
+                      Choose File
+                    </label>
+                    {formData.entrepreneurImage && (
+                      <span className="text-gray-600">Image selected</span>
+                    )}
                   </div>
-
                   <select
                     name="businessCategory"
                     value={formData.businessCategory}
@@ -283,7 +299,6 @@ const SubmitIdeaForm = () => {
                     <option value="Education">Education</option>
                     <option value="Retail">Retail</option>
                   </select>
-
                   <input
                     type="text"
                     name="entrepreneurLocation"
@@ -292,7 +307,6 @@ const SubmitIdeaForm = () => {
                     onChange={handleChange}
                     className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                   />
-
                   <textarea
                     name="entrepreneurBackground"
                     placeholder="Your Professional Background"
@@ -304,13 +318,8 @@ const SubmitIdeaForm = () => {
                 </motion.div>
               )}
               {step === 2 && (
-                <motion.div
-                  key="step2"
-                  {...stepVariants}
-                  className="space-y-4"
-                >
+                <motion.div key="step2" {...stepVariants} className="space-y-4">
                   <h2 className="text-xl font-semibold mb-4">Business Details</h2>
-
                   <textarea
                     name="overview"
                     placeholder="Business Overview"
@@ -319,7 +328,6 @@ const SubmitIdeaForm = () => {
                     rows={4}
                     className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                   />
-
                   <textarea
                     name="problemStatement"
                     placeholder="Problem Statement"
@@ -328,7 +336,6 @@ const SubmitIdeaForm = () => {
                     rows={4}
                     className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                   />
-
                   <textarea
                     name="solution"
                     placeholder="Your Solution"
@@ -337,7 +344,6 @@ const SubmitIdeaForm = () => {
                     rows={4}
                     className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                   />
-
                   <input
                     type="text"
                     name="marketSize"
@@ -346,7 +352,6 @@ const SubmitIdeaForm = () => {
                     onChange={handleChange}
                     className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                   />
-
                   <select
                     name="currentStage"
                     value={formData.currentStage}
@@ -362,63 +367,96 @@ const SubmitIdeaForm = () => {
                   </select>
                 </motion.div>
               )}
-
               {step === 3 && (
-                <motion.div
-                  key="step3"
-                  {...stepVariants}
-                  className="space-y-4"
-                >
+                <motion.div key="step3" {...stepVariants} className="space-y-4">
                   <h2 className="text-xl font-semibold mb-4">Financial Information</h2>
-
                   <div className="grid grid-cols-2 gap-4">
                     <input
                       type="text"
                       name="fundingNeeded"
-                      placeholder="Funding Needed"
+                      placeholder="Funding Needed (Birr)"
                       value={formData.fundingNeeded}
                       onChange={handleChange}
                       className="p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                     />
-
                     <input
                       type="text"
                       name="fundingRaised"
-                      placeholder="Funding Raised So Far"
+                      placeholder="Funding Raised So Far (Birr)"
                       value={formData.fundingRaised}
                       onChange={handleChange}
                       className="p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                   </div>
-
                   <div className="space-y-4">
+                    <select
+                      name="investmentTimeline"
+                      value={formData.investmentTimeline}
+                      onChange={handleChange}
+                      className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    >
+                      <option value="">Select Investment Timeline</option>
+                      <option value="1 month">1 Month</option>
+                      <option value="2 months">2 Months</option>
+                      <option value="6 months">6 Months</option>
+                      <option value="9 months">9 Months</option>
+                      <option value="1 year">1 Year</option>
+                    </select>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Entrepreneur's Equity (%)
+                        </label>
+                        <input
+                          type="number"
+                          name="entrepreneurEquity"
+                          placeholder="Your Equity Percentage"
+                          value={formData.entrepreneurEquity}
+                          onChange={handleChange}
+                          min="0"
+                          max="100"
+                          step="0.01"
+                          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Investors' Equity (%)
+                        </label>
+                        <input
+                          type="number"
+                          name="investorEquity"
+                          placeholder="Investors' Equity Percentage"
+                          value={formData.investorEquity}
+                          readOnly
+                          className="w-full p-3 border rounded-lg bg-gray-100 outline-none"
+                        />
+                      </div>
+                    </div>
                     <input
                       type="text"
                       name="valuation"
-                      placeholder="Current Valuation"
+                      placeholder="Current Valuation (Birr)"
                       value={formData.financials.valuation}
                       onChange={handleFinancialChange}
                       className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                     />
-
                     <input
                       type="text"
                       name="revenue2023"
-                      placeholder="Revenue 2023"
+                      placeholder="Revenue 2023 (Birr)"
                       value={formData.financials.revenue2023}
                       onChange={handleFinancialChange}
                       className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                     />
-
                     <input
                       type="text"
                       name="projectedRevenue2024"
-                      placeholder="Projected Revenue 2024"
+                      placeholder="Projected Revenue 2024 (Birr)"
                       value={formData.financials.projectedRevenue2024}
                       onChange={handleFinancialChange}
                       className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                     />
-
                     <input
                       type="text"
                       name="breakEvenPoint"
@@ -428,7 +466,6 @@ const SubmitIdeaForm = () => {
                       className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                   </div>
-
                   <div className="space-y-2">
                     <div className="flex gap-2">
                       <input
@@ -455,12 +492,12 @@ const SubmitIdeaForm = () => {
                           {use}
                           <button
                             type="button"
-                            onClick={() => {
-                              setFormData(prev => ({
+                            onClick={() =>
+                              setFormData((prev) => ({
                                 ...prev,
-                                useOfFunds: prev.useOfFunds.filter((_, i) => i !== index)
-                              }));
-                            }}
+                                useOfFunds: prev.useOfFunds.filter((_, i) => i !== index),
+                              }))
+                            }
                             className="hover:text-blue-800"
                           >
                             <X className="w-4 h-4" />
@@ -471,15 +508,9 @@ const SubmitIdeaForm = () => {
                   </div>
                 </motion.div>
               )}
-
               {step === 4 && (
-                <motion.div
-                  key="step4"
-                  {...stepVariants}
-                  className="space-y-6"
-                >
+                <motion.div key="step4" {...stepVariants} className="space-y-6">
                   <h2 className="text-xl font-semibold mb-4">Team & Traction</h2>
-
                   <div className="space-y-4">
                     {formData.team.map((member, index) => (
                       <div key={index} className="p-4 border rounded-lg space-y-4">
@@ -488,19 +519,18 @@ const SubmitIdeaForm = () => {
                           {index > 0 && (
                             <button
                               type="button"
-                              onClick={() => {
-                                setFormData(prev => ({
+                              onClick={() =>
+                                setFormData((prev) => ({
                                   ...prev,
-                                  team: prev.team.filter((_, i) => i !== index)
-                                }));
-                              }}
+                                  team: prev.team.filter((_, i) => i !== index),
+                                }))
+                              }
                               className="text-red-500 hover:text-red-700"
                             >
                               <X className="w-5 h-5" />
                             </button>
                           )}
                         </div>
-
                         <input
                           type="text"
                           placeholder="Name"
@@ -508,7 +538,6 @@ const SubmitIdeaForm = () => {
                           onChange={(e) => handleTeamMemberChange(index, 'name', e.target.value)}
                           className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                         />
-
                         <input
                           type="text"
                           placeholder="Role"
@@ -516,7 +545,6 @@ const SubmitIdeaForm = () => {
                           onChange={(e) => handleTeamMemberChange(index, 'role', e.target.value)}
                           className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                         />
-
                         <input
                           type="text"
                           placeholder="Expertise"
@@ -526,7 +554,6 @@ const SubmitIdeaForm = () => {
                         />
                       </div>
                     ))}
-
                     <button
                       type="button"
                       onClick={handleAddTeamMember}
@@ -536,7 +563,6 @@ const SubmitIdeaForm = () => {
                       Add Team Member
                     </button>
                   </div>
-
                   <div className="space-y-2">
                     <div className="flex gap-2">
                       <input
@@ -563,12 +589,12 @@ const SubmitIdeaForm = () => {
                           {item}
                           <button
                             type="button"
-                            onClick={() => {
-                              setFormData(prev => ({
+                            onClick={() =>
+                              setFormData((prev) => ({
                                 ...prev,
-                                traction: prev.traction.filter((_, i) => i !== index)
-                              }));
-                            }}
+                                traction: prev.traction.filter((_, i) => i !== index),
+                              }))
+                            }
                             className="hover:text-blue-800"
                           >
                             <X className="w-4 h-4" />
@@ -579,15 +605,9 @@ const SubmitIdeaForm = () => {
                   </div>
                 </motion.div>
               )}
-
               {step === 5 && (
-                <motion.div
-                  key="step5"
-                  {...stepVariants}
-                  className="space-y-6"
-                >
+                <motion.div key="step5" {...stepVariants} className="space-y-6">
                   <h2 className="text-xl font-semibold mb-4">Required Documents</h2>
-
                   {Object.entries(formData.documents).map(([key, value]) => (
                     <div key={key} className="space-y-2">
                       <label className="block font-medium">
@@ -606,17 +626,17 @@ const SubmitIdeaForm = () => {
                         >
                           <div className="flex items-center gap-2 text-gray-600">
                             <Upload className="w-5 h-5" />
-                            <span>{value ? value.name : `Upload ${key.split(/(?=[A-Z])/).join(' ')}`}</span>
+                            <span>
+                              {value ? value.name : `Upload ${key.split(/(?=[A-Z])/).join(' ')}`}
+                            </span>
                           </div>
                         </label>
                       </div>
                     </div>
                   ))}
                 </motion.div>
-
               )}
             </AnimatePresence>
-
             <div className="flex justify-between mt-8">
               {step > 1 && (
                 <button
@@ -628,7 +648,6 @@ const SubmitIdeaForm = () => {
                   Back
                 </button>
               )}
-
               {step < 5 ? (
                 <button
                   type="button"
@@ -640,7 +659,8 @@ const SubmitIdeaForm = () => {
                 </button>
               ) : (
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={handleSubmit}
                   className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 ml-auto"
                 >
                   Submit Idea

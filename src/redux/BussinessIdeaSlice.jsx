@@ -85,6 +85,7 @@ const businessIdeaSlice = createSlice({
     },
     setSelectedBusinessIdea: (state, action) => {
       state.selectedBusinessIdea = action.payload;
+      console.log("selectedBusinessIdea, action", state.selectedBusinessIdea)
     },
   },
   extraReducers: (builder) => {
