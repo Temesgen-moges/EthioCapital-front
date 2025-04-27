@@ -10,13 +10,13 @@ const FundReleaseManagement = ({ darkMode }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState('pending'); // 'pending' or 'approved'
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api/v1';
+  const API_URL = process.env.REACT_APP_API_URL || 'https://ethio-capital-backend-123.onrender.com/api/v1';
   const token = localStorage.getItem('authToken');
 
   // Initialize Socket.IO for real-time updates
   useEffect(() => {
     console.log('[FundReleaseManagement] Initializing Socket.IO with token:', token);
-    const socket = io('http://localhost:3001', {
+    const socket = io('https://ethio-capital-backend-123.onrender.com', {
       auth: { token },
     });
 

@@ -41,7 +41,7 @@
 //   const [fundReleases, setFundReleases] = useState([]);
 //   const [newFundRelease, setNewFundRelease] = useState(false);
 //   const token = localStorage.getItem('authToken');
-//   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api/v1';
+//   const API_URL = process.env.REACT_APP_API_URL || 'https://ethio-capital-backend-123.onrender.com/api/v1';
 //   const socket = useRef(null);
 
 //   const {
@@ -185,7 +185,7 @@
 
 //   useEffect(() => {
 //     if (token && businessIdeaId) {
-//       socket.current = io('http://localhost:3001', { auth: { token } });
+//       socket.current = io('https://ethio-capital-backend-123.onrender.com', { auth: { token } });
 //       socket.current.on('connect', () => {
 //         socket.current.emit('joinRoom', `business:${businessIdeaId}`);
 //       });
@@ -1002,7 +1002,7 @@ const BoardDashboard = () => {
   const [showRefundInvestorsModal, setShowRefundInvestorsModal] = useState(false);
   const [showThankYouOverlay, setShowThankYouOverlay] = useState(false);
   const token = localStorage.getItem('authToken');
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api/v1';
+  const API_URL = process.env.REACT_APP_API_URL || 'https://ethio-capital-backend-123.onrender.com/api/v1';
   const socket = useRef(null);
 
   const {
@@ -1243,7 +1243,7 @@ const BoardDashboard = () => {
 
   useEffect(() => {
     if (token && businessIdeaId && isValidObjectId(businessIdeaId)) {
-      socket.current = io('http://localhost:3001', { auth: { token } });
+      socket.current = io('https://ethio-capital-backend-123.onrender.com', { auth: { token } });
       socket.current.on('connect', () => {
         console.log('[BoardDashboard] Socket.IO connected');
         if (conversationId && isValidObjectId(conversationId)) {

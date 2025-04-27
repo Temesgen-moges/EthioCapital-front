@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:3001", {
+const socket = io("https://ethio-capital-backend-123.onrender.com", {
   reconnection: true,
   reconnectionAttempts: 5,
 });
@@ -12,7 +12,7 @@ const Message = ({ conversationId, userId, ideaId }) => {
   const [input, setInput] = useState("");
   const messagesStartRef = useRef(null);
   const token = localStorage.getItem("authToken");
-  const API_URL = "http://localhost:3001/api/v1";
+  const API_URL = "https://ethio-capital-backend-123.onrender.com/api/v1";
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",

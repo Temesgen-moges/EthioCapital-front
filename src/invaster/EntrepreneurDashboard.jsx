@@ -96,7 +96,7 @@ function EntrepreneurDashboard() {
     dispatch(fetchUserData());
     dispatch(fetchBussinessIdea());
 
-    const socketInstance = io("http://localhost:3001", {
+    const socketInstance = io("https://ethio-capital-backend-123.onrender.com", {
       auth: {
         token: `Bearer ${localStorage.getItem("authToken")}`,
       },
@@ -119,7 +119,7 @@ function EntrepreneurDashboard() {
           navigate("/login");
           return;
         }
-        const response = await axios.get("http://localhost:3001/api/v1/student-applications", {
+        const response = await axios.get("https://ethio-capital-backend-123.onrender.com/api/v1/student-applications", {
           headers: { Authorization: `Bearer ${token}` },
           params: { status: "approved" },
         });
@@ -177,7 +177,7 @@ function EntrepreneurDashboard() {
         isValidObjectId(newApp.id)
       ) {
         axios
-          .get(`http://localhost:3001/api/v1/student-applications/${newApp.id}`, {
+          .get(`https://ethio-capital-backend-123.onrender.com/api/v1/student-applications/${newApp.id}`, {
             headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
           })
           .then((response) => {

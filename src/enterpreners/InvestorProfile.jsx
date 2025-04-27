@@ -66,7 +66,7 @@ const InvestorProfile = () => {
   const [requestActionLoading, setRequestActionLoading] = useState({});
   const [isRefreshing, setIsRefreshing] = useState(false);
   const token = localStorage.getItem("authToken");
-  const API_URL = "http://localhost:3001/api/v1";
+  const API_URL = "https://ethio-capital-backend-123.onrender.com/api/v1";
 
   useEffect(() => {
     dispatch(fetchUserProfile());

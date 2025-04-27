@@ -24,7 +24,7 @@ const ForgotPassword = () => {
       // Use local URL for testing if backend is running locally
       const response = await axios.post(
         // "https://ethio-capital-back-end-2.onrender.com/api/v1/forgot-password",
-        "http://localhost:3001/api/v1/forgot-password",
+        "https://ethio-capital-backend-123.onrender.com/api/v1/forgot-password",
         { email }
       );
       setMessage(response.data.message);

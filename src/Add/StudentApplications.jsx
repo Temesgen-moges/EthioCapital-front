@@ -15,7 +15,7 @@ const StudentApplications = ({ darkMode }) => {
 
   // Initialize Socket.IO
   useEffect(() => {
-    const socket = io('http://localhost:3001', {
+    const socket = io('https://ethio-capital-backend-123.onrender.com', {
       query: { userId: localStorage.getItem('userId') },
     });
 
@@ -50,7 +50,7 @@ const StudentApplications = ({ darkMode }) => {
       setError('');
       try {
         const token = localStorage.getItem('authToken');
-        const response = await axios.get('http://localhost:3001/api/v1/student-applications', {
+        const response = await axios.get('https://ethio-capital-backend-123.onrender.com/api/v1/student-applications', {
           headers: { Authorization: `Bearer ${token}` },
           params: { status: statusFilter },
         });
@@ -73,7 +73,7 @@ const StudentApplications = ({ darkMode }) => {
     try {
       const token = localStorage.getItem('authToken');
       await axios.patch(
-        `http://localhost:3001/api/v1/student-applications/${id}/${action}`,
+        `https://ethio-capital-backend-123.onrender.com/api/v1/student-applications/${id}/${action}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -2,7 +2,7 @@ import axios from "axios";
 
 const setupAxios = () => {
   // Set base URL for all requests
-  axios.defaults.baseURL = "http://localhost:3001/api/v1"; // Adjust for production if needed
+  axios.defaults.baseURL = "https://ethio-capital-backend-123.onrender.com/api/v1"; // Adjust for production if needed
   // axios.defaults.baseURL = 'https://ethio-capital-back-end-2.onrender.com/api/v1'; // Example base URL
 
   // Add request interceptor to include token and headers

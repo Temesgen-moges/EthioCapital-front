@@ -38,8 +38,8 @@
 //     (state) => state.messageDatas.messageDatas || []
 //   );
 //   const token = localStorage.getItem("authToken");
-//   const API_URL = "http://localhost:3001/api/v1";
-//   const STATIC_URL = "http://localhost:3001";
+//   const API_URL = "https://ethio-capital-backend-123.onrender.com/api/v1";
+//   const STATIC_URL = "https://ethio-capital-backend-123.onrender.com";
 
 //   const [socket, setSocket] = useState(null);
 //   const [isInterested, setIsInterested] = useState(false);
@@ -89,7 +89,7 @@
   
 //   useEffect(() => {
 //     if (token && userData.userData?._id) {
-//       const newSocket = io("http://localhost:3001", {
+//       const newSocket = io("https://ethio-capital-backend-123.onrender.com", {
 //         auth: { token },
 //         query: { userId: userData.userData._id },
 //       });
@@ -439,7 +439,7 @@
 //       console.log("fetchInvestmentDetails called");
 //       try {
 //         const response = await axios.get(
-//           `http://localhost:3001/api/v1/investments-details/${projectId}`
+//           `https://ethio-capital-backend-123.onrender.com/api/v1/investments-details/${projectId}`
 //         );
 //         console.log("investment details", response.data);
 //         setData(response.data);
@@ -2339,8 +2339,8 @@ const StartupDetail = () => {
     (state) => state.messageDatas.messageDatas || []
   );
   const token = localStorage.getItem("authToken");
-  const API_URL = "http://localhost:3001/api/v1";
-  const STATIC_URL = "http://localhost:3001";
+  const API_URL = "https://ethio-capital-backend-123.onrender.com/api/v1";
+  const STATIC_URL = "https://ethio-capital-backend-123.onrender.com";
 
   const [socket, setSocket] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
@@ -2393,7 +2393,7 @@ const StartupDetail = () => {
   // Socket.io connection
   useEffect(() => {
     if (token && userData.userData?._id) {
-      const newSocket = io("http://localhost:3001", {
+      const newSocket = io("https://ethio-capital-backend-123.onrender.com", {
         auth: { token },
         query: { userId: userData.userData._id },
       });
@@ -2708,7 +2708,7 @@ const StartupDetail = () => {
     const fetchInvestmentDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/api/v1/investments-details/${projectId}`
+          `https://ethio-capital-backend-123.onrender.com/api/v1/investments-details/${projectId}`
         );
         setData(response.data);
       } catch (err) {

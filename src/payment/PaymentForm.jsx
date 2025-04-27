@@ -19,7 +19,7 @@ function PaymentForm() {
   const { selectedIdea, userId } = location.state || {};
   const userDataFromRedux = useSelector((state) => state.userData.userData);
   const token = localStorage.getItem("authToken");
-  const API_URL = "http://localhost:3001/api/v1";
+  const API_URL = "https://ethio-capital-backend-123.onrender.com/api/v1";
 
   const [userData, setUserData] = useState({ fullName: "", email: "" });
   const [loading, setLoading] = useState(true);
@@ -52,7 +52,7 @@ function PaymentForm() {
 
   useEffect(() => {
     if (token && userId) {
-      const newSocket = io("http://localhost:3001", {
+      const newSocket = io("https://ethio-capital-backend-123.onrender.com", {
         auth: { token },
         query: { userId },
       });

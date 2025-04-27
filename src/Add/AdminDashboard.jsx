@@ -29,7 +29,7 @@
 //   Area
 // } from 'recharts';
 
-// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/api/v1';
+// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://ethio-capital-backend-123.onrender.com/api/v1';
 
 // // Mock data for dashboard metrics
 // const mockData = {
@@ -131,7 +131,7 @@
 
 //   // Initialize Socket.IO for notifications
 //   useEffect(() => {
-//     const socket = io('http://localhost:3001', {
+//     const socket = io('https://ethio-capital-backend-123.onrender.com', {
 //       query: { userId: localStorage.getItem('userId') },
 //       auth: { token: localStorage.getItem('authToken') },
 //     });
@@ -1094,7 +1094,7 @@ import {
   Area
 } from 'recharts';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/api/v1';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://ethio-capital-backend-123.onrender.com/api/v1';
 
 // Mock data for dashboard metrics
 const mockData = {
@@ -1196,7 +1196,7 @@ const AdminDashboard = () => {
 
   // Initialize Socket.IO for notifications
   useEffect(() => {
-    const socket = io('http://localhost:3001', {
+    const socket = io('https://ethio-capital-backend-123.onrender.com', {
       query: { userId: localStorage.getItem('userId') },
       auth: { token: localStorage.getItem('authToken') },
     });

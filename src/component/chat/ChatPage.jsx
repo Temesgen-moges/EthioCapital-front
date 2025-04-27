@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import Message from "./Messsage";
 
 // Socket.IO connection
-const socket = io("http://localhost:3001", {
+const socket = io("https://ethio-capital-backend-123.onrender.com", {
   reconnection: true,
   reconnectionAttempts: 5,
 });
@@ -16,7 +16,7 @@ const ChatPage = ({ userId, token, role, ideas = [] }) => {
   const [error, setError] = useState(null);
 
   // API configuration
-  const API_URL = "http://localhost:3001/api/v1";
+  const API_URL = "https://ethio-capital-backend-123.onrender.com/api/v1";
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",

@@ -11,7 +11,7 @@ const FundReleaseForm = ({
   setNotificationMessage,
   setShowNotification,
   fetchFundReleases,
-  API_URL = 'http://localhost:3001/api/v1',
+  API_URL = 'https://ethio-capital-backend-123.onrender.com/api/v1',
 }) => {
   const [fundReleaseForm, setFundReleaseForm] = useState({
     bankName: '',
@@ -33,7 +33,7 @@ const FundReleaseForm = ({
       return;
     }
 
-    const newSocket = io('http://localhost:3001', {
+    const newSocket = io('https://ethio-capital-backend-123.onrender.com', {
       auth: { token },
     });
 
