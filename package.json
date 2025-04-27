@@ -25,6 +25,7 @@
     "browserify-zlib": "^0.2.0",
     "chart.js": "^4.4.7",
     "d3": "^7.9.0",
+    "fabric": "^6.6.4",
     "framer-motion": "^11.11.11",
     "https-browserify": "^1.0.0",
     "jwt-decode": "^4.0.0",
