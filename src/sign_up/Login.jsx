@@ -140,8 +140,6 @@
 
 // export default Login;
 
-
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -157,7 +155,6 @@ const Login = () => {
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -175,12 +172,11 @@ const Login = () => {
       } else if (response.status === 200 && response.data.user.role === "admin") {
         navigate("/admin-dashboard");
       } else {
-        alert("Invalid email or password. Please try again. for navigation");
+        alert("Invalid email or password. Please try again.");
       }
     } catch (error) {
       alert("Invalid email or password. Please try again.");
     } finally {
-      setLoading(true);
       setTimeout(() => {
         setLoading(false);
       }, 2000);
@@ -247,6 +243,7 @@ const Login = () => {
               </button>
             </div>
           </div>
+
           <div className="relative w-full">
             <motion.button
               whileHover={{ scale: 1.02 }}

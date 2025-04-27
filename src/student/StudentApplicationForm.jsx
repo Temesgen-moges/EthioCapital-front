@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -11,6 +10,8 @@ import {
   ClipboardList,
   FileText,
   CheckCircle,
+  Camera,
+  Link,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -26,6 +27,14 @@ const StudentApplicationForm = () => {
     fullName: '',
     dateOfBirth: '',
     contactEmail: '',
+    profilePicture: null,
+    socialMedia: {
+      linkedIn: '',
+      twitter: '',
+      github: '',
+      other: '',
+    },
+    portfolioDescription: '',
     educationHistory: [
       {
         institution: '',
@@ -35,7 +44,8 @@ const StudentApplicationForm = () => {
     ],
     fundingPurpose: 'university',
     fundingAmount: '',
-    fundingRaised: '0', // Added to ensure compatibility with StudentDetail.jsx
+    fundingDuration: '',
+    fundingRaised: '0',
     financialNeedsDescription: '',
     documents: {
       academicTranscripts: null,
@@ -52,6 +62,14 @@ const StudentApplicationForm = () => {
         if (!formData.dateOfBirth) newErrors.dateOfBirth = 'Birth date required';
         if (!formData.contactEmail.trim()) newErrors.contactEmail = 'Email required';
         else if (!/\S+@\S+\.\S+/.test(formData.contactEmail)) newErrors.contactEmail = 'Invalid email format';
+        if (formData.socialMedia.linkedIn && !/^https?:\/\/(www\.)?linkedin\.com\//.test(formData.socialMedia.linkedIn))
+          newErrors.linkedIn = 'Invalid LinkedIn URL';
+        if (formData.socialMedia.twitter && !/^https?:\/\/(www\.)?(twitter|x)\.com\//.test(formData.socialMedia.twitter))
+          newErrors.twitter = 'Invalid Twitter URL';
+        if (formData.socialMedia.github && !/^https?:\/\/(www\.)?github\.com\//.test(formData.socialMedia.github))
+          newErrors.github = 'Invalid GitHub URL';
+        if (!formData.profilePicture) newErrors.profilePicture = 'Profile picture required';
+        if (!formData.portfolioDescription.trim()) newErrors.portfolioDescription = 'Portfolio description required';
         break;
       case 2:
         formData.educationHistory.forEach((edu, index) => {
@@ -63,6 +81,7 @@ const StudentApplicationForm = () => {
         if (!formData.fundingAmount) newErrors.fundingAmount = 'Funding amount required';
         else if (isNaN(formData.fundingAmount) || Number(formData.fundingAmount) <= 0)
           newErrors.fundingAmount = 'Enter a valid amount';
+        if (!formData.fundingDuration) newErrors.fundingDuration = 'Funding duration required';
         if (!formData.financialNeedsDescription)
           newErrors.financialNeedsDescription = 'Description required';
         break;
@@ -88,8 +107,17 @@ const StudentApplicationForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: undefined }));
+    if (name.startsWith('socialMedia.')) {
+      const field = name.split('.')[1];
+      setFormData((prev) => ({
+        ...prev,
+        socialMedia: { ...prev.socialMedia, [field]: value },
+      }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const handleEducationChange = (index, field, value) => {
@@ -139,10 +167,12 @@ const StudentApplicationForm = () => {
       Promise.all(readers).then((results) => {
         setFormData((prev) => ({
           ...prev,
-          documents: {
-            ...prev.documents,
-            [field]: field === 'additionalDocuments' ? [...(prev.documents[field] || []), ...results] : results[0],
-          },
+          [field === 'profilePicture' ? field : 'documents']: field === 'profilePicture' 
+            ? results[0]
+            : {
+                ...prev.documents,
+                [field]: field === 'additionalDocuments' ? [...(prev.documents[field] || []), ...results] : results[0],
+              },
         }));
         setErrors((prev) => ({ ...prev, [field]: undefined }));
       });
@@ -178,6 +208,14 @@ const StudentApplicationForm = () => {
           fullName: '',
           dateOfBirth: '',
           contactEmail: '',
+          profilePicture: null,
+          socialMedia: {
+            linkedIn: '',
+            twitter: '',
+            github: '',
+            other: '',
+          },
+          portfolioDescription: '',
           educationHistory: [
             {
               institution: '',
@@ -187,6 +225,7 @@ const StudentApplicationForm = () => {
           ],
           fundingPurpose: 'university',
           fundingAmount: '',
+          fundingDuration: '',
           fundingRaised: '0',
           financialNeedsDescription: '',
           documents: {
@@ -349,6 +388,93 @@ const StudentApplicationForm = () => {
                         )}
                       </div>
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                        <Camera size={16} />
+                        Profile Picture *
+                        {errors.profilePicture && (
+                          <span className="text-red-500 text-sm ml-2">{errors.profilePicture}</span>
+                        )}
+                      </label>
+                      <input
+                        type="file"
+                        accept=".jpg,.png"
+                        onChange={(e) => handleFileUpload(e, 'profilePicture')}
+                        className="w-full p-3 border rounded-lg border-gray-300"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                        <Link size={16} />
+                        Social Media Links (optional)
+                      </label>
+                      <div className="space-y-2">
+                        <div>
+                          <input
+                            type="text"
+                            name="socialMedia.linkedIn"
+                            placeholder="LinkedIn URL"
+                            value={formData.socialMedia.linkedIn}
+                            onChange={handleChange}
+                            className={`w-full p-3 border rounded-lg ${
+                              errors.linkedIn ? 'border-red-500' : 'border-gray-300'
+                            }`}
+                          />
+                          {errors.linkedIn && <p className="text-red-500 text-sm mt-1">{errors.linkedIn}</p>}
+                        </div>
+                        <div>
+                          <input
+                            type="text"
+                            name="socialMedia.twitter"
+                            placeholder="Twitter URL"
+                            value={formData.socialMedia.twitter}
+                            onChange={handleChange}
+                            className={`w-full p-3 border rounded-lg ${
+                              errors.twitter ? 'border-red-500' : 'border-gray-300'
+                            }`}
+                          />
+                          {errors.twitter && <p className="text-red-500 text-sm mt-1">{errors.twitter}</p>}
+                        </div>
+                        <div>
+                          <input
+                            type="text"
+                            name="socialMedia.github"
+                            placeholder="GitHub URL"
+                            value={formData.socialMedia.github}
+                            onChange={handleChange}
+                            className={`w-full p-3 border rounded-lg ${
+                              errors.github ? 'border-red-500' : 'border-gray-300'
+                            }`}
+                          />
+                          {errors.github && <p className="text-red-500 text-sm mt-1">{errors.github}</p>}
+                        </div>
+                        <div>
+                          <input
+                            type="text"
+                            name="socialMedia.other"
+                            placeholder="Other Portfolio URL"
+                            value={formData.socialMedia.other}
+                            onChange={handleChange}
+                            className="w-full p-3 border rounded-lg border-gray-300"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <textarea
+                        name="portfolioDescription"
+                        placeholder="Describe yourself and your achievements for your portfolio *"
+                        value={formData.portfolioDescription}
+                        onChange={handleChange}
+                        rows={4}
+                        className={`w-full p-3 border rounded-lg ${
+                          errors.portfolioDescription ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                      />
+                      {errors.portfolioDescription && (
+                        <p className="text-red-500 text-sm mt-1">{errors.portfolioDescription}</p>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -462,6 +588,26 @@ const StudentApplicationForm = () => {
                       />
                       {errors.fundingAmount && (
                         <p className="text-red-500 text-sm mt-1">{errors.fundingAmount}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Funding Duration *</label>
+                      <select
+                        name="fundingDuration"
+                        value={formData.fundingDuration}
+                        onChange={handleChange}
+                        className={`w-full p-3 border rounded-lg ${
+                          errors.fundingDuration ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                      >
+                        <option value="">Select Duration</option>
+                        <option value="3">3 Months</option>
+                        <option value="6">6 Months</option>
+                        <option value="9">9 Months</option>
+                        <option value="12">12 Months</option>
+                      </select>
+                      {errors.fundingDuration && (
+                        <p className="text-red-500 text-sm mt-1">{errors.fundingDuration}</p>
                       )}
                     </div>
                     <div>
