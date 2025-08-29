@@ -10,7 +10,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 // API base URL
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://ethio-capital-backend-123.onrender.com/api/v1';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://ethiocapital-back.onrender.com/api/v1';
 
 // RankBadge Component
 const RankBadge = ({ rank, darkMode }) => {

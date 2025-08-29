@@ -26,7 +26,7 @@ const MessageConversationModal = ({
       if (selectedMessage?._id) {
         // Reply to an existing complaint
         const response = await axios.post(
-          `/api/v1/complaint/reply/${selectedMessage._id}`,
+          `/complaint/reply/${selectedMessage._id}`,
           { responseText }
         );
         console.log("Reply response:", response.data);
@@ -51,7 +51,7 @@ const MessageConversationModal = ({
         }));
       } else {
         // Create a new complaint
-        const response = await axios.post("/api/v1/complaint", {
+        const response = await axios.post("/complaint", {
           responseText,
         });
         console.log("New complaint response:", response.data);

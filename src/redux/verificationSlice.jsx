@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_URL = 'https://ethio-capital-backend-123.onrender.com/api/v1';
+const API_URL = 'https://ethiocapital-back.onrender.com/api/v1';
 const token = localStorage.getItem('authToken');
 
 // Async thunk to fetch verifications

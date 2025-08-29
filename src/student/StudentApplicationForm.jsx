@@ -191,7 +191,7 @@ const StudentApplicationForm = () => {
       }
       console.log('Submitting form to /api/v1/student-applications:', formData);
       const response = await axios.post(
-        'https://ethio-capital-backend-123.onrender.com/api/v1/student-applications',
+        'https://ethiocapital-back.onrender.com/api/v1/student-applications',
         formData,
         {
           headers: {

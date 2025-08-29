@@ -20,22 +20,10 @@ const ForgotPassword = () => {
     setError("");
 
     try {
-      console.log("Sending forgot password request for email:", email);
-      // Use local URL for testing if backend is running locally
-      const response = await axios.post(
-        // "https://ethio-capital-back-end-2.onrender.com/api/v1/forgot-password",
-        "https://ethio-capital-backend-123.onrender.com/api/v1/forgot-password",
-        { email }
-      );
+      const response = await axios.post("https://ethiocapital-back.onrender.com/api/v1/forgot-password", { email });
       setMessage(response.data.message);
     } catch (err) {
-      console.error("Forgot password error:", err);
-      setError(
-        err.response?.data?.message ||
-        err.message === "Network Error"
-          ? "Cannot connect to the server. Please check if the backend is running."
-          : "Something went wrong. Please try again."
-      );
+      setError(err.response?.data?.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -86,9 +74,7 @@ const ForgotPassword = () => {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className={`w-full bg-blue-500 text-white py-3 rounded-lg font-bold shadow-lg transition-all duration-300 ${
-                loading ? "opacity-50 pointer-events-none" : "hover:bg-blue-600"
-              }`}
+              className={`w-full bg-blue-500 text-white py-3 rounded-lg font-bold shadow-lg transition-all duration-300 ${loading ? 'opacity-50 pointer-events-none' : 'hover:bg-blue-600'}`}
             >
               Send Reset Link
             </motion.button>
@@ -101,8 +87,12 @@ const ForgotPassword = () => {
           </div>
         </form>
 
-        {message && <p className="mt-4 text-blue-500 text-center">{message}</p>}
-        {error && <p className="mt-4 text-red-500 text-center">{error}</p>}
+        {message && (
+          <p className="mt-4 text-blue-500 text-center">{message}</p>
+        )}
+        {error && (
+          <p className="mt-4 text-red-500 text-center">{error}</p>
+        )}
 
         <div className="mt-6 text-center">
           <p className="text-black">

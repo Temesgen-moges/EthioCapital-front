@@ -29,7 +29,7 @@
 //   Area
 // } from 'recharts';
 
-// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://ethio-capital-backend-123.onrender.com/api/v1';
+// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://ethiocapital-back.onrender.com/api/v1';
 
 // // Mock data for dashboard metrics
 // const mockData = {
@@ -131,7 +131,7 @@
 
 //   // Initialize Socket.IO for notifications
 //   useEffect(() => {
-//     const socket = io('https://ethio-capital-backend-123.onrender.com', {
+//     const socket = io('http://localhost:3001', {
 //       query: { userId: localStorage.getItem('userId') },
 //       auth: { token: localStorage.getItem('authToken') },
 //     });
@@ -1094,7 +1094,7 @@ import {
   Area
 } from 'recharts';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://ethio-capital-backend-123.onrender.com/api/v1';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://ethiocapital-back.onrender.com/api/v1';
 
 // Mock data for dashboard metrics
 const mockData = {
@@ -1160,11 +1160,9 @@ const AdminDashboard = () => {
     { id: 4, message: "New investor verification pending", time: "5 min ago", isNew: true },
     { id: 5, message: "New student application submitted", time: "15 min ago", isNew: true }
   ]);
-  const [messages, setMessages] = useState([
-    { id: 1, sender: "Jane Cooper", content: "Is my business idea approved?", time: "5 min ago", avatar: "https://randomuser.me/api/portraits/women/10.jpg", isNew: true },
-    { id: 2, sender: "Robert Fox", content: "Need help with my profile", time: "3 hours ago", avatar: "https://randomuser.me/api/portraits/men/4.jpg", isNew: true },
-    { id: 3, sender: "Wade Warren", content: "Thank you for the feedback", time: "Yesterday", avatar: "https://randomuser.me/api/portraits/men/5.jpg", isNew: false }
-  ]);
+  const [messages, setMessages] = useState([]);
+
+
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
@@ -1182,6 +1180,33 @@ const AdminDashboard = () => {
   // Centralize modal state to manage body overflow
   const isAnyModalOpen = selectedIdea || selectedMessage || showNotifications || showMessages || isUserModalOpen;
 
+  useEffect(() => {
+    const fetchComplaints= async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        const response = await axios.get(`/complaints`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("Complaints fetched:", response.data);
+        // const userComplaints = response.data.filter(
+        //   (c) => c.userId._id === userData._id
+        // );
+        setMessages(response.data);
+      } catch (error) {
+        console.error("Error fetching complaints:", error);
+        if (error.response?.status === 401) {
+          // setError("Session expired. Please log in again.");
+          localStorage.removeItem("authToken");
+          navigate("/login");
+        }
+      }
+      
+    }
+
+    fetchComplaints();
+  },[])
   // Handle body overflow for all modals
   useEffect(() => {
     if (isAnyModalOpen) {
@@ -1196,7 +1221,7 @@ const AdminDashboard = () => {
 
   // Initialize Socket.IO for notifications
   useEffect(() => {
-    const socket = io('https://ethio-capital-backend-123.onrender.com', {
+    const socket = io('http://localhost:3001', {
       query: { userId: localStorage.getItem('userId') },
       auth: { token: localStorage.getItem('authToken') },
     });
@@ -1730,7 +1755,7 @@ const AdminDashboard = () => {
                       ) : (
                         messages.map(message => (
                           <motion.div
-                            key={message.id}
+                            key={message._id}
                             whileHover={{ x: 5 }}
                             className={`p-4 ${darkMode ? 'border-gray-700 hover:bg-gray-700' : 'border-gray-100 hover:bg-gray-50'} border-b last:border-0 cursor-pointer transition-colors ${message.isNew ? (darkMode ? 'bg-gray-700' : 'bg-blue-50') : ''}`}
                             onClick={() => {
@@ -1744,14 +1769,14 @@ const AdminDashboard = () => {
                               <div className="flex-grow">
                                 <div className="flex justify-between items-start">
                                   <p className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                                    {message.sender}
+                                    {message?.userId?.fullName}
                                   </p>
                                   <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
-                                    {message.time}
+                                    {message.createdAt}
                                   </p>
                                 </div>
                                 <p className={`text-sm line-clamp-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                  {message.content}
+                                  {message.description}
                                 </p>
                               </div>
                             </div>

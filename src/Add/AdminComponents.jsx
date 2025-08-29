@@ -11,7 +11,7 @@
 // import { useNavigate } from 'react-router-dom';
 
 // // API base URL from environment variable
-// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://ethio-capital-backend-123.onrender.com/api/v1';
+// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://ethiocapital-back.onrender.com/api/v1';
 
 // const RankBadge = ({ rank, darkMode }) => {
 //   if (!rank) return null;
@@ -1251,7 +1251,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 // API base URL from environment variable
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://ethio-capital-backend-123.onrender.com/api/v1';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://ethiocapital-back.onrender.com/api/v1';
 
 const RankBadge = ({ rank, darkMode }) => {
   if (!rank) return null;

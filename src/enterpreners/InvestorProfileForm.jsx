@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-
 import { setUserData, clearUserData, addUserData, fetchUserData } from '../redux/UserSlice';
 
 const InvestorProfileForm = () => {
@@ -15,28 +14,21 @@ const InvestorProfileForm = () => {
   const { userData } = useSelector((state) => state.userData);
 
   useEffect(() => {
-    dispatch(fetchUserData()); // Ensure this function is being called
+    dispatch(fetchUserData());
   }, [dispatch]);
 
   const [formData, setFormData] = useState({
-    // Personal Information
     name: '',
     title: '',
     photo: null,
     about: '',
-
-    // Investment Details
     capital: '',
     experience: '',
     successfulExits: '',
     portfolioCompanies: '',
-
-    // Fields and Preferences
     preferredFields: [],
     minimumInvestment: '',
     maximumInvestment: '',
-
-    // Social Links
     socialLinks: {
       linkedin: '',
       twitter: '',
@@ -44,69 +36,120 @@ const InvestorProfileForm = () => {
       instagram: '',
       email: ''
     },
-
-    // Portfolio
-    previousInvestments: [
-      { name: '', result: '', description: '', image: null }
-    ]
+    previousInvestments: [{ name: '', result: '', description: '', image: null }]
   });
 
+  const [errors, setErrors] = useState({});
   const [newField, setNewField] = useState('');
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
 
-  const handleNext = () => setStep(step + 1);
+  const handleNext = () => {
+    if (validateStep(step)) {
+      setStep(step + 1);
+    }
+  };
+
   const handleBack = () => setStep(step - 1);
 
+  // Validation regex
+  const nameRegex = /^[a-zA-Z\s]*$/; // Only letters and spaces
+  const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/; // Basic URL validation
+  const linkedinRegex = /^https?:\/\/(www\.)?linkedin\.com\/.*$/; // LinkedIn-specific
+  const twitterRegex = /^https?:\/\/(www\.)?(twitter\.com|x\.com)\/.*$/; // Twitter/X-specific
 
+  // Validate individual field
+  const validateField = (name, value) => {
+    let error = '';
+    if (name === 'name') {
+      if (!value) {
+        error = 'Name is required';
+      } else if (!nameRegex.test(value)) {
+        error = 'Name can only contain letters and spaces';
+      }
+    } else if (name === 'linkedin' && value) {
+      if (!urlRegex.test(value) || !linkedinRegex.test(value)) {
+        error = 'Please enter a valid LinkedIn URL';
+      }
+    } else if (name === 'twitter' && value) {
+      if (!urlRegex.test(value) || !twitterRegex.test(value)) {
+        error = 'Please enter a valid Twitter/X URL';
+      }
+    } else if (name === 'website' && value) {
+      if (!urlRegex.test(value)) {
+        error = 'Please enter a valid website URL';
+      }
+    } else if (name === 'instagram' && value) {
+      if (!urlRegex.test(value)) {
+        error = 'Please enter a valid Instagram URL';
+      }
+    }
+    return error;
+  };
+
+  // Validate current step
+  const validateStep = (currentStep) => {
+    const newErrors = {};
+    let isValid = true;
+
+    if (currentStep === 1) {
+      newErrors.name = validateField('name', formData.name);
+      if (newErrors.name) isValid = false;
+    } else if (currentStep === 3) {
+      newErrors.linkedin = validateField('linkedin', formData.socialLinks.linkedin);
+      newErrors.twitter = validateField('twitter', formData.socialLinks.twitter);
+      newErrors.website = validateField('website', formData.socialLinks.website);
+      newErrors.instagram = validateField('instagram', formData.socialLinks.instagram);
+      if (Object.values(newErrors).some((error) => error)) isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value
+    }));
+    // Validate on change
+    setErrors((prev) => ({
+      ...prev,
+      [name]: validateField(name, value)
     }));
   };
 
   const handleSocialLinkChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       socialLinks: {
         ...prev.socialLinks,
         [name]: value
       }
     }));
+    // Validate on change
+    setErrors((prev) => ({
+      ...prev,
+      [name]: validateField(name, value)
+    }));
   };
 
-
-  // const handlePhotoUpload = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     setSelectedFile(file); // Store in local state only!
-  //     // Optionally, you could also generate a preview URL:
-  //     setFormData(prev => ({
-  //       ...prev,
-  //       // You might use a preview URL for display purposes
-  //       photoPreview: URL.createObjectURL(file)
-  //     }));
-  //   }
-  // };
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
       try {
         const base64 = await convertFileToBase64(file);
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          photo: base64 // now photo is a serializable string
+          photo: base64
         }));
       } catch (error) {
-        console.error("Error converting file:", error);
+        console.error('Error converting file:', error);
       }
     }
   };
-
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -114,7 +157,7 @@ const InvestorProfileForm = () => {
 
   const handleAddField = () => {
     if (newField.trim()) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         preferredFields: [...prev.preferredFields, newField.trim()]
       }));
@@ -123,28 +166,28 @@ const InvestorProfileForm = () => {
   };
 
   const handleRemoveField = (indexToRemove) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       preferredFields: prev.preferredFields.filter((_, index) => index !== indexToRemove)
     }));
   };
 
   const handleAddInvestment = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       previousInvestments: [...prev.previousInvestments, { name: '', result: '', description: '', image: null }]
     }));
   };
 
   const handleRemoveInvestment = (index) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       previousInvestments: prev.previousInvestments.filter((_, i) => i !== index)
     }));
   };
 
   const handleInvestmentChange = (index, field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       previousInvestments: prev.previousInvestments.map((investment, i) =>
         i === index ? { ...investment, [field]: value } : investment
@@ -152,7 +195,6 @@ const InvestorProfileForm = () => {
     }));
   };
 
-  // Update `email` when `userData` is available
   useEffect(() => {
     if (userData && userData.email) {
       setFormData((prevData) => ({
@@ -164,7 +206,6 @@ const InvestorProfileForm = () => {
       }));
     }
   }, [userData]);
-  
 
   const convertFileToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -175,18 +216,18 @@ const InvestorProfileForm = () => {
     });
   };
 
-  // Remove the file from formData that you store in Redux
-  // Instead, use local state to manage the file
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Dispatch the form data to the server using async thunk
-    try {
-      await dispatch(addUserData(formData)).unwrap();
-      alert('Profile submitted successfully!');
-    } catch (error) {
-      console.error('Error submitting profile:', error);
-      alert('Failed to submit profile.');
+    if (validateStep(step)) {
+      try {
+        await dispatch(addUserData(formData)).unwrap();
+        alert('Profile submitted successfully!');
+      } catch (error) {
+        console.error('Error submitting profile:', error);
+        alert('Failed to submit profile.');
+      }
+    } else {
+      alert('Please fix the errors before submitting.');
     }
   };
 
@@ -197,7 +238,6 @@ const InvestorProfileForm = () => {
   };
 
   return (
-
     <div className="min-h-screen bg-gray-50 p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -216,10 +256,6 @@ const InvestorProfileForm = () => {
           Investor Profile Setup
         </h1>
 
-        {/* Navigation */}
-
-
-        {/* Progress Bar */}
         <div className="mb-8">
           <div className="h-2 bg-gray-200 rounded-full">
             <motion.div
@@ -247,8 +283,6 @@ const InvestorProfileForm = () => {
                 className="space-y-6"
               >
                 <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
-
-                {/* Photo Upload */}
                 <div className="flex justify-center">
                   <div
                     className={`w-32 h-32 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer
@@ -260,15 +294,13 @@ const InvestorProfileForm = () => {
                   >
                     {formData.photo ? (
                       <img
-                        src={formData.photo}  // This is now a Base64 data URL
+                        src={formData.photo}
                         alt="Profile"
                         className="w-full h-full rounded-full object-cover"
                       />
                     ) : (
                       <Camera className="w-8 h-8 text-gray-400" />
                     )}
-
-
                     <input
                       id="photo-upload"
                       type="file"
@@ -278,16 +310,20 @@ const InvestorProfileForm = () => {
                     />
                   </div>
                 </div>
-
                 <div className="space-y-4">
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Full Name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                  />
+                  <div>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Full Name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${
+                        errors.name ? 'border-red-500' : ''
+                      }`}
+                    />
+                    {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                  </div>
                   <input
                     type="text"
                     name="title"
@@ -361,8 +397,6 @@ const InvestorProfileForm = () => {
                 className="space-y-6"
               >
                 <h2 className="text-xl font-semibold mb-4">Preferences & Social Links</h2>
-
-                {/* Preferred Fields */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium">Preferred Investment Fields</label>
                   <div className="flex gap-2 mb-2">
@@ -399,41 +433,70 @@ const InvestorProfileForm = () => {
                     ))}
                   </div>
                 </div>
-
-                {/* Social Links */}
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Linkedin className="w-5 h-5 text-blue-600" />
-                    <input
-                      type="text"
-                      name="linkedin"
-                      placeholder="LinkedIn URL"
-                      value={formData.socialLinks.linkedin}
-                      onChange={handleSocialLinkChange}
-                      className="flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                    />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Linkedin className="w-5 h-5 text-blue-600" />
+                      <input
+                        type="text"
+                        name="linkedin"
+                        placeholder="LinkedIn URL"
+                        value={formData.socialLinks.linkedin}
+                        onChange={handleSocialLinkChange}
+                        className={`flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${
+                          errors.linkedin ? 'border-red-500' : ''
+                        }`}
+                      />
+                    </div>
+                    {errors.linkedin && <p className="text-red-500 text-sm mt-1">{errors.linkedin}</p>}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Twitter className="w-5 h-5 text-blue-400" />
-                    <input
-                      type="text"
-                      name="twitter"
-                      placeholder="Twitter URL"
-                      value={formData.socialLinks.twitter}
-                      onChange={handleSocialLinkChange}
-                      className="flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                    />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Twitter className="w-5 h-5 text-blue-400" />
+                      <input
+                        type="text"
+                        name="twitter"
+                        placeholder="Twitter URL"
+                        value={formData.socialLinks.twitter}
+                        onChange={handleSocialLinkChange}
+                        className={`flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${
+                          errors.twitter ? 'border-red-500' : ''
+                        }`}
+                      />
+                    </div>
+                    {errors.twitter && <p className="text-red-500 text-sm mt-1">{errors.twitter}</p>}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Globe className="w-5 h-5 text-gray-600" />
-                    <input
-                      type="text"
-                      name="website"
-                      placeholder="Website URL"
-                      value={formData.socialLinks.website}
-                      onChange={handleSocialLinkChange}
-                      className="flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                    />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Globe className="w-5 h-5 text-gray-600" />
+                      <input
+                        type="text"
+                        name="website"
+                        placeholder="Website URL"
+                        value={formData.socialLinks.website}
+                        onChange={handleSocialLinkChange}
+                        className={`flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${
+                          errors.website ? 'border-red-500' : ''
+                        }`}
+                      />
+                    </div>
+                    {errors.website && <p className="text-red-500 text-sm mt-1">{errors.website}</p>}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Instagram className="w-5 h-5 text-pink-600" />
+                      <input
+                        type="text"
+                        name="instagram"
+                        placeholder="Instagram URL"
+                        value={formData.socialLinks.instagram}
+                        onChange={handleSocialLinkChange}
+                        className={`flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${
+                          errors.instagram ? 'border-red-500' : ''
+                        }`}
+                      />
+                    </div>
+                    {errors.instagram && <p className="text-red-500 text-sm mt-1">{errors.instagram}</p>}
                   </div>
                 </div>
               </motion.div>
@@ -447,7 +510,6 @@ const InvestorProfileForm = () => {
                 className="space-y-6"
               >
                 <h2 className="text-xl font-semibold mb-4">Previous Investments</h2>
-
                 {formData.previousInvestments.map((investment, index) => (
                   <motion.div
                     key={index}
@@ -465,7 +527,6 @@ const InvestorProfileForm = () => {
                         <X className="w-5 h-5" />
                       </button>
                     </div>
-
                     <input
                       type="text"
                       placeholder="Company Name"
@@ -489,7 +550,6 @@ const InvestorProfileForm = () => {
                     />
                   </motion.div>
                 ))}
-
                 <button
                   type="button"
                   onClick={handleAddInvestment}
@@ -502,7 +562,6 @@ const InvestorProfileForm = () => {
             )}
           </AnimatePresence>
 
-          {/* Navigation Buttons */}
           <div className="flex justify-between mt-8">
             {step > 1 && (
               <button
@@ -514,7 +573,6 @@ const InvestorProfileForm = () => {
                 Back
               </button>
             )}
-
             {step < 4 ? (
               <button
                 type="button"

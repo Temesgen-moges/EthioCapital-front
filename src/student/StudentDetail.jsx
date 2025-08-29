@@ -13,8 +13,8 @@ const StudentDetail = () => {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.userData);
   const token = localStorage.getItem("authToken");
-  const API_URL = "https://ethio-capital-backend-123.onrender.com/api/v1";
-  const STATIC_URL = "https://ethio-capital-backend-123.onrender.com";
+  const API_URL = "https://ethiocapital-back.onrender.com/api/v1";
+  const STATIC_URL = "https://ethiocapital-back.onrender.com";
 
   const [studentDetails, setStudentDetails] = useState({});
   const [loading, setLoading] = useState(true);

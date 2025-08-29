@@ -10,7 +10,7 @@ const SuccessPage = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const token = localStorage.getItem('authToken');
-  const API_URL = 'https://ethio-capital-backend-123.onrender.com/api/v1';
+  const API_URL = 'https://ethiocapital-back.onrender.com/api/v1';
 
   // Extract txRef from URL query parameters
   const queryParams = new URLSearchParams(location.search);

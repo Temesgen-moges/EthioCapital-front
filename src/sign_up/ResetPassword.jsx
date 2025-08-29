@@ -39,7 +39,7 @@ const ResetPassword = () => {
 
     try {
       const response = await axios.post(
-        `https://ethio-capital-backend-123.onrender.com/api/v1/reset-password/${token}`,
+        `https://ethiocapital-back.onrender.com/api/v1/reset-password/${token}`,
         { password }
       );
       setMessage(response.data.message);

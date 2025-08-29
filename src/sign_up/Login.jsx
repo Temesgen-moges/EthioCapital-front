@@ -140,6 +140,8 @@
 
 // export default Login;
 
+
+
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -155,13 +157,14 @@ const Login = () => {
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post("https://ethio-capital-back-end-2.onrender.com/api/v1/login", formData);
+      const response = await axios.post("https://ethiocapital-back.onrender.com/api/v1/login", formData);
       console.log(response);
       localStorage.setItem("authToken", response.data.token);
       console.log("user role", response.data.user.role);
@@ -172,11 +175,12 @@ const Login = () => {
       } else if (response.status === 200 && response.data.user.role === "admin") {
         navigate("/admin-dashboard");
       } else {
-        alert("Invalid email or password. Please try again.");
+        alert("Invalid email or password. Please try again. for navigation");
       }
     } catch (error) {
       alert("Invalid email or password. Please try again.");
     } finally {
+      setLoading(true);
       setTimeout(() => {
         setLoading(false);
       }, 2000);
@@ -243,7 +247,6 @@ const Login = () => {
               </button>
             </div>
           </div>
-
           <div className="relative w-full">
             <motion.button
               whileHover={{ scale: 1.02 }}

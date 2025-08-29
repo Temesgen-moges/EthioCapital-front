@@ -160,7 +160,7 @@ const SecureDocumentViewer = () => {
     const normalizedPath = decodedPath.startsWith("/")
       ? decodedPath.slice(1)
       : decodedPath;
-    const fullUrl = `https://ethio-capital-backend-123.onrender.com/${normalizedPath}`;
+    const fullUrl = `https://ethiocapital-back.onrender.com/${normalizedPath}`;
     console.log("SecureDocumentViewer decodedPath:", decodedPath);
     console.log("Full URL:", fullUrl);
 

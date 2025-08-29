@@ -73,7 +73,7 @@ const InvestorVerificationHandler = ({ darkMode = false }) => {
     error,
   } = useSelector((state) => state.verification);
 
-  const BASE_URL = 'https://ethio-capital-backend-123.onrender.com'; // Base server URL for static files
+  const BASE_URL = 'https://ethiocapital-back.onrender.com'; // Base server URL for static files
 
   useEffect(() => {
     console.log('[InvestorVerificationHandler] Fetching verifications for status:', statusFilter);

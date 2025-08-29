@@ -12,7 +12,7 @@ import BlogAdminForm from './Add/BlogAdminForm';
 import AdminDashboard from './Add/AdminDashboard';
 import InvestorProfile from './enterpreners/InvestorProfile';
 import InvestorProfileForm from './enterpreners/InvestorProfileForm';
-import EditIdeaPage from './invaster/EditIdeaPage';
+
 import BoardDashboard from './bord/BoardDashboard';
 import Documents from './bord/Documents';
 import PaymentForm from './payment/PaymentForm';
@@ -26,6 +26,9 @@ import SecureDocumentViewer from './enterpreners/SecureDocumentViewer';
 import InvestorVerificationHandler from './Add/InvestorVerificationHandler'; // Add this import
 import ResetPassword from './sign_up/ResetPassword';
 import ForgotPassword from './sign_up/ForgotPassword';
+import EditIdea from './enterpreners/EditIdea';
+import Profile from './enterpreners/Profile';
+
 
 
 
@@ -44,8 +47,9 @@ const AppRouter = () => {
         <Route path="/Blog-admin-page" element={<BlogAdminForm />} />
         <Route path="/Admin-Dashboard" element={<AdminDashboard />} />
         <Route path="/Investor-Profile" element={<InvestorProfile />} />
+        <Route path="/profile/:id" element={<Profile />} />
         <Route path="/Investor-profile-form" element={<InvestorProfileForm />} />
-        <Route path="/edit-idea/:id" element={<EditIdeaPage />} />
+        {/* <Route path="/edit-idea/:id" element={<EditIdeaPage />} /> */}
         <Route path="/BoardDashboard" element={<BoardDashboard />} />
         <Route path="/Documents" element={<Documents />} />
         <Route path="/PaymentForm" element={<PaymentForm />} />
@@ -66,6 +70,7 @@ const AppRouter = () => {
         <Route path="*" element={<Welcome />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/edit-idea/:id" element={<EditIdea/>} />
       
      
       </Routes>
