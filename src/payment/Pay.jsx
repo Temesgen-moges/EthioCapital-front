@@ -42,7 +42,7 @@ const Pay = ({
       <input type="hidden" name="title" value="Ethio Capital Investment" />
       <input type="hidden" name="description" value={`Investment in ${project_name} - Shares: ${shares}`} />
       <input type="hidden" name="callback_url" value="https://ethiocapital-back.onrender.com/api/v1/callback" />
-      <input type="hidden" name="return_url" value="http://localhost:3000/success" />
+      <input type="hidden" name="return_url" value="https://ethiocapital-front.onrender.com/success" />
       <input type="hidden" name="meta[project_id]" value={project_id} />
       <input type="hidden" name="meta[shares]" value={shares} />
       <input type="hidden" name="meta[equityPercentage]" value={equityPercentage} />
@@ -63,3 +63,4 @@ const Pay = ({
 };
 
 export default Pay;
+
