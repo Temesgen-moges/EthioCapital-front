@@ -96,7 +96,7 @@ function EntrepreneurDashboard() {
     dispatch(fetchUserData());
     dispatch(fetchBussinessIdea());
 
-    const socketInstance = io("http://localhost:3001", {
+    const socketInstance = io("https://ethiocapital-back.onrender.com", {
       auth: {
         token: `Bearer ${localStorage.getItem("authToken")}`,
       },
@@ -1073,5 +1073,6 @@ function EntrepreneurDashboard() {
     </div>
   );
 }
+
 
 export default EntrepreneurDashboard;
