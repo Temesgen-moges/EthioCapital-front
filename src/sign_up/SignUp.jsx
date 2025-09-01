@@ -721,10 +721,26 @@ const SignUp = () => {
 
   const navigate = useNavigate();
 
+
   const validatePassword = (password) => {
+    // Check for minimum length of 6 characters
+    const hasMinLength = password.length >= 6;
+    // Check for at least one uppercase letter
+    const hasUpperCase = /[A-Z]/.test(password);
+    // Check for at least one lowercase letter
+    const hasLowerCase = /[a-z]/.test(password);
+    // Check for at least one digit
+    const hasDigit = /[0-9]/.test(password);
+    // Check for at least one special character
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+    // Count non-digit characters
     const nonDigitCount = (password.match(/[^0-9]/g) || []).length;
-    const digitCount = (password.match(/[0-9]/g) || []).length;
-    return nonDigitCount >= 2 && digitCount >= 6;
+  
+    if (!(hasMinLength && hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar && nonDigitCount >= 2)) {
+      setPasswordError("Password must be at least 6 characters long and include at least one uppercase letter, one lowercase letter, one digit, one special character (e.g., !@#$%^&*), and at least two non-digit characters for security.");
+    }
+  
+    return hasMinLength && hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar && nonDigitCount >= 2;
   };
 
   const handleSubmit = async (e) => {
@@ -746,7 +762,7 @@ const SignUp = () => {
     }
 
     if (!validatePassword(formData.password)) {
-      setPasswordError("Password must contain at least 2 non-digit characters and 6 digits for security.");
+      setPasswordError("Password must be at least 6 characters long and include at least one uppercase letter, one lowercase letter, one digit, one special character (e.g., !@#$%^&*), and at least two non-digit characters for security.");
       return;
     }
 
@@ -1123,5 +1139,6 @@ const SignUp = () => {
     </div>
   );
 };
+
 
 export default SignUp;
