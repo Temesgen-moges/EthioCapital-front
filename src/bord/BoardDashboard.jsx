@@ -1243,7 +1243,7 @@ const BoardDashboard = () => {
 
   useEffect(() => {
     if (token && businessIdeaId && isValidObjectId(businessIdeaId)) {
-      socket.current = io('http://localhost:3001', { auth: { token } });
+      socket.current = io('https://ethiocapital-back.onrender.com', { auth: { token } });
       socket.current.on('connect', () => {
         console.log('[BoardDashboard] Socket.IO connected');
         if (conversationId && isValidObjectId(conversationId)) {
@@ -2244,5 +2244,6 @@ const BoardDashboard = () => {
     </div>
   );
 };
+
 
 export default BoardDashboard;
