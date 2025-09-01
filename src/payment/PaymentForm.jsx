@@ -52,7 +52,7 @@ function PaymentForm() {
 
   useEffect(() => {
     if (token && userId) {
-      const newSocket = io("http://localhost:3001", {
+      const newSocket = io("https://ethiocapital-back.onrender.com", {
         auth: { token },
         query: { userId },
       });
