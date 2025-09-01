@@ -1221,7 +1221,7 @@ const AdminDashboard = () => {
 
   // Initialize Socket.IO for notifications
   useEffect(() => {
-    const socket = io('http://localhost:3001', {
+    const socket = io('https://ethiocapital-back.onrender.com', {
       query: { userId: localStorage.getItem('userId') },
       auth: { token: localStorage.getItem('authToken') },
     });
@@ -2134,5 +2134,6 @@ const AdminDashboard = () => {
     </div>
   );
 };
+
 
 export default AdminDashboard;
