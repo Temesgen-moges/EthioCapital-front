@@ -684,7 +684,7 @@ const NavigationBar = ({
   // Replace with authenticated user ID
   const jwtToken = localStorage.getItem("authToken");
   useEffect(() => {
-    const socket = io("http://localhost:3001", {
+    const socket = io("https://ethiocapital-back.onrender.com", {
       auth: {
         token: jwtToken,
       },
@@ -1016,3 +1016,4 @@ const NavigationBar = ({
 };
 
 export default NavigationBar;
+
